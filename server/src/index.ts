@@ -39,6 +39,7 @@ async function main(): Promise<void> {
   });
 
   const rooms = new RoomManager(io, config, bank);
+  rooms.startReaper(); // libère les rooms abandonnées (in-memory)
   registerSocketHandlers(io, rooms);
 
   httpServer.listen(env.port, env.host, () => {
