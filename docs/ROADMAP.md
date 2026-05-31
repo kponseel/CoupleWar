@@ -87,10 +87,11 @@ Le plus simple des Mime (pas de caméra/DeviceMotion).
 - [x] Seed : 10 concepts + pool de 120 emojis
 - **Acceptation** : ✅ round emoji jouable, fuzzy-match testé (8 tests), scoring testé (5), e2e dédié, secret jamais fuité.
 
-### B3. Mécaniques anti-décrochage (§10.3) ⬜ ⏱️1j
-- [ ] Leader du round → handicap secret au suivant ; dernier → bonus secret
-- [ ] Champ `handicap` déjà présent dans le modèle → l'exploiter
-- **Acceptation** : handicap/bonus appliqués et affichés, configurables.
+### B3. Mécaniques anti-décrochage (§10.3) ✅ ⏱️1j
+- [x] Leader du round → handicap (score ×leaderPenalty) au suivant ; dernier → bonus (×lastBonus)
+- [x] Champ `handicap` exploité (libellé secret affiché au joueur concerné)
+- [x] Configurable (`catchUp` : enabled/leaderPenalty/lastBonus/minCouples), jamais en FINALE
+- **Acceptation** : ✅ fonction pure testée (5), test d'intégration (delta leader < neutre < dernier), bandeau client.
 
 ### B4. Selfie-réactions + scrapbook (§8 / §10.3) ⬜ ⏱️2j
 - [ ] `getUserMedia` avec consentement explicite + opt-out par joueur (fallback : jeu sans capture)
