@@ -116,6 +116,7 @@ export const createAuctionMode: ModeFactory = (ctx: RoundContext): RoundControll
       if (phase !== "answer") return { accepted: false, reason: "wrong_phase" };
       if (payload.questionId !== q.id) return { accepted: false, reason: "wrong_question" };
       if (playerId !== ciblePlayerId) return { accepted: false, reason: "not_target" };
+      if (typeof payload.answer !== "string") return { accepted: false, reason: "need_value" };
       // Réponse = une option pré-générée OU texte libre (≤ freeTextMaxChars).
       let answer = payload.answer.trim();
       if (answer === OTHER_OPTION || answer.length === 0) {
@@ -139,8 +140,12 @@ export const createAuctionMode: ModeFactory = (ctx: RoundContext): RoundControll
       if (coupleId === targetCouple.id && playerId !== devineurPlayerId) {
         return { accepted: false, reason: "cible_cannot_bet" };
       }
-      if (!bettableOptions.includes(payload.option)) {
+      if (typeof payload.option !== "string" || !bettableOptions.includes(payload.option)) {
         return { accepted: false, reason: "invalid_option" };
+      }
+      // tokens doit être un entier fini dans les bornes, sinon NaN corrompt le score.
+      if (!Number.isFinite(payload.tokens)) {
+        return { accepted: false, reason: "invalid_tokens" };
       }
       const tokens = Math.round(payload.tokens);
       if (tokens < cfg.minBet || tokens > cfg.maxBet) {

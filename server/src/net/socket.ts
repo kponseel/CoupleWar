@@ -11,6 +11,26 @@ interface SocketData {
 
 type CWSocket = Socket<ClientToServer, ServerToClient, Record<string, never>, SocketData>;
 
+function isObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === "object" && v !== null;
+}
+
+/**
+ * Enveloppe un ack pour ne jamais lever si le client n'a pas fourni de callback
+ * (un client malveillant peut émettre sans ack → un appel direct planterait).
+ */
+function safeAck<T>(cb: unknown): (res: { ok: true; data: T } | { ok: false; error: string }) => void {
+  return (res) => {
+    if (typeof cb === "function") {
+      try {
+        (cb as (r: unknown) => void)(res);
+      } catch {
+        /* ack injoignable : on ignore */
+      }
+    }
+  };
+}
+
 /** Câble les événements Socket.io aux méthodes de Room (autorité serveur). */
 export function registerSocketHandlers(io: Server, rooms: RoomManager): void {
   io.on("connection", (rawSocket) => {
@@ -113,23 +133,27 @@ export function registerSocketHandlers(io: Server, rooms: RoomManager): void {
 
     // --- Jeu ---
     socket.on("answer:submit", (payload, cb) => {
+      const ack = safeAck(cb);
       const code = socket.data.roomCode;
       const pid = socket.data.playerId;
-      if (!code || !pid) return cb({ ok: false, error: "no_session" });
+      if (!code || !pid) return ack({ ok: false, error: "no_session" });
+      if (!isObject(payload)) return ack({ ok: false, error: "bad_payload" });
       const room = rooms.get(code);
-      if (!room) return cb({ ok: false, error: "room_not_found" });
+      if (!room) return ack({ ok: false, error: "room_not_found" });
       const res = room.submitAnswer(pid, payload);
-      cb({ ok: true, data: { accepted: res.accepted, reason: res.reason } });
+      ack({ ok: true, data: { accepted: res.accepted, reason: res.reason } });
     });
 
     socket.on("auction:bet", (payload, cb) => {
+      const ack = safeAck(cb);
       const code = socket.data.roomCode;
       const pid = socket.data.playerId;
-      if (!code || !pid) return cb({ ok: false, error: "no_session" });
+      if (!code || !pid) return ack({ ok: false, error: "no_session" });
+      if (!isObject(payload)) return ack({ ok: false, error: "bad_payload" });
       const room = rooms.get(code);
-      if (!room) return cb({ ok: false, error: "room_not_found" });
+      if (!room) return ack({ ok: false, error: "room_not_found" });
       const res = room.submitBet(pid, payload);
-      cb({ ok: true, data: { accepted: res.accepted, reason: res.reason } });
+      ack({ ok: true, data: { accepted: res.accepted, reason: res.reason } });
     });
 
     socket.on("disconnect", () => {

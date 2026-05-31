@@ -63,7 +63,13 @@ export const createSyncMode: ModeFactory = (ctx: RoundContext): RoundController 
       if (payload.questionId !== q.id) return { accepted: false, reason: "wrong_question" };
       if (!coupledPlayerIds.has(playerId)) return { accepted: false, reason: "not_paired" };
       if (answers.has(playerId)) return { accepted: false, reason: "already_answered" };
-      if (!options.includes(payload.answer)) return { accepted: false, reason: "invalid_option" };
+      if (typeof payload.answer !== "string" || !options.includes(payload.answer)) {
+        return { accepted: false, reason: "invalid_option" };
+      }
+      // Le timestamp client doit être un nombre fini, sinon le scoring se corrompt (NaN).
+      if (!Number.isFinite(payload.clientSubmitTime)) {
+        return { accepted: false, reason: "invalid_timestamp" };
+      }
       if (payload.clientSubmitTime > deadline + cfg.lateToleranceMs) {
         return { accepted: false, reason: "too_late" };
       }
