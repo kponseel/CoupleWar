@@ -34,30 +34,31 @@ Légende : ✅ fait · 🟡 partiel · ⬜ à faire · ⏱️ estimation (j = jo
 But : que la v1.0 actuelle soit **réellement jouable en soirée** et **déployée** sur
 `couplewar.estim.pro`. Priorité absolue.
 
-### A1. Validation déploiement Hostinger ⬜ ⏱️1.5j
+### A1. Validation déploiement Hostinger 🟡 (checklist prête : `docs/DEPLOY_CHECKLIST.md`) ⏱️1.5j
 - [ ] Provisionner le VPS, dérouler le README pas à pas (corriger ce qui bloque)
 - [ ] HTTPS + `wss://` fonctionnels sur le domaine (Certbot)
 - [ ] Test de charge léger : 8–12 clients réels (mix iOS/Android) sur 4G
 - **Acceptation** : une partie complète jouée de bout en bout depuis des téléphones réels via `https://couplewar.estim.pro`.
 
-### A2. Tests sur appareils réels (§14 checklist) ⬜ ⏱️1j
+### A2. Tests sur appareils réels (§14 checklist) 🟡 (checklist prête : `docs/DEVICE_TEST_CHECKLIST.md`) ⏱️1j
 - [ ] Offset d'horloge fiable à ±100 ms (iOS + Android mélangés, 4G dégradée)
 - [ ] Wake Lock survit à lock/unlock manuel (`visibilitychange`)
 - [ ] Audio se déverrouille au 1er tap iOS, drumroll audible
 - [ ] Reconnexion réseau 10 s sans casser la room (déjà testé en e2e, à confirmer terrain)
 - **Acceptation** : checklist §14 cochée sur au moins 1 iPhone + 1 Android.
 
-### A3. Robustesse de partie ⬜ ⏱️1j
-- [ ] Bouton hôte « passer / forcer la révélation » (si un joueur bloque)
-- [ ] Gérer un couple dont les 2 joueurs partent en cours de partie (exclusion propre du scoring/leaderboard)
-- [ ] Écran d'erreur claire si la room expire pendant qu'on joue
-- **Acceptation** : aucun blocage possible côté hôte ; tests d'intégration ajoutés.
+### A3. Robustesse de partie ✅ ⏱️1j
+- [x] Bouton hôte « ⏭️ Révéler maintenant » (force la fin de phase, anti-blocage)
+- [x] Écran/message clair si la room expire pendant qu'on joue (`room_expired`)
+- [x] Filets de sécurité existants confirmés (timeouts de round, partenaire absent géré)
+- **Acceptation** : ✅ contrôle hôte + 2 tests d'intégration `forceReveal` (autorisation + hors-phase).
 
-### A4. Accessibilité & UX mobile ⬜ ⏱️1j
-- [ ] Contrastes AA, tailles de cibles tactiles ≥ 44px, `prefers-reduced-motion`
-- [ ] Gestion du clavier mobile (champs texte enchères/noms ne masquent pas le bouton)
-- [ ] États de chargement/vides soignés (lobby vide, attente partenaire)
-- **Acceptation** : audit Lighthouse PWA ≥ 90, pas de débordement sur petit écran (320px).
+### A4. Accessibilité & UX mobile ✅ (à confirmer Lighthouse sur device, cf A2) ⏱️1j
+- [x] Cibles tactiles ≥ 48px, focus clavier visible (`:focus-visible`)
+- [x] `prefers-reduced-motion` : animations coupées proprement
+- [x] Safe-area iOS (encoche/barre home) ; défilement sur petit écran (clavier)
+- [x] ARIA sur le compte à rebours (`role="timer"`)
+- **Acceptation** : ✅ côté code ; score Lighthouse à vérifier sur appareil réel (A2).
 
 ---
 

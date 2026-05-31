@@ -65,6 +65,7 @@ interface AppState {
   setCoupleName: (coupleId: string, name: string) => Promise<void>;
   toggleReady: (ready: boolean) => Promise<void>;
   startGame: () => Promise<void>;
+  forceReveal: () => Promise<void>;
   submitAnswer: (answer: string) => Promise<void>;
   submitBet: (option: string, tokens: number) => Promise<void>;
 }
@@ -205,6 +206,11 @@ export const useStore = create<AppState>((set, get) => ({
   async startGame() {
     const res = await emitAck<{ started: boolean }>("game:start");
     if (!res.ok) set({ error: res.error ?? "cannot_start" });
+  },
+
+  async forceReveal() {
+    const res = await emitAck<{ forced: boolean }>("game:forceReveal");
+    if (!res.ok) set({ error: res.error ?? "cannot_force" });
   },
 
   async submitAnswer(answer) {

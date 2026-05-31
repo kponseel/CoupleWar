@@ -160,16 +160,30 @@ export function registerSocketHandlers(io: Server, rooms: RoomManager): void {
 
     // --- Démarrage (host) ---
     socket.on("game:start", (cb) => {
+      const ack = safeAck(cb);
       const code = socket.data.roomCode;
       const pid = socket.data.playerId;
-      if (!code || !pid) return cb({ ok: false, error: "no_session" });
+      if (!code || !pid) return ack({ ok: false, error: "no_session" });
       const room = rooms.get(code);
-      if (!room) return cb({ ok: false, error: "room_not_found" });
+      if (!room) return ack({ ok: false, error: "room_not_found" });
       const player = room.data.players.get(pid);
-      if (!player?.isHost) return cb({ ok: false, error: "not_host" });
+      if (!player?.isHost) return ack({ ok: false, error: "not_host" });
       const res = room.startGame();
-      if (!res.ok) return cb({ ok: false, error: res.reason ?? "cannot_start" });
-      cb({ ok: true, data: { started: true } });
+      if (!res.ok) return ack({ ok: false, error: res.reason ?? "cannot_start" });
+      ack({ ok: true, data: { started: true } });
+    });
+
+    // --- Forcer la révélation (host, anti-blocage §A3) ---
+    socket.on("game:forceReveal", (cb) => {
+      const ack = safeAck(cb);
+      const code = socket.data.roomCode;
+      const pid = socket.data.playerId;
+      if (!code || !pid) return ack({ ok: false, error: "no_session" });
+      const room = rooms.get(code);
+      if (!room) return ack({ ok: false, error: "room_not_found" });
+      const res = room.forceReveal(pid);
+      if (!res.forced) return ack({ ok: false, error: res.reason ?? "cannot_force" });
+      ack({ ok: true, data: { forced: true } });
     });
 
     // --- Jeu ---

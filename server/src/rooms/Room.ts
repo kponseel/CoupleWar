@@ -464,6 +464,20 @@ export class Room {
   }
 
   // -------------------------------------------------------------------------
+  // Contrôle hôte (anti-blocage §A3)
+  // -------------------------------------------------------------------------
+  /** L'hôte force la fin de la phase de jeu en cours (si un joueur bloque). */
+  forceReveal(playerId: string): { forced: boolean; reason?: string } {
+    const p = this.data.players.get(playerId);
+    if (!p?.isHost) return { forced: false, reason: "not_host" };
+    if ((this.data.state !== "ROUND_PLAY" && this.data.state !== "FINALE") || !this.controller) {
+      return { forced: false, reason: "not_in_play" };
+    }
+    this.onRoundComplete();
+    return { forced: true };
+  }
+
+  // -------------------------------------------------------------------------
   // Routage des actions de jeu
   // -------------------------------------------------------------------------
   submitAnswer(

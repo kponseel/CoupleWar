@@ -50,6 +50,8 @@ function humanError(code: string): string {
     connection_lost: "Connexion perdue. Vérifie ton réseau.",
     timeout: "Le serveur n'a pas répondu. Réessaie.",
     bad_payload: "Données invalides.",
+    room_expired: "La partie est terminée ou la room a expiré.",
+    cannot_force: "Impossible de forcer la révélation maintenant.",
   };
   return map[code] ?? code;
 }
@@ -71,7 +73,11 @@ export function Countdown({ start, deadline }: { start: number; deadline: number
   }, [start, deadline]);
   const danger = pct < 33;
   return (
-    <div className="countdown">
+    <div
+      className="countdown"
+      role="timer"
+      aria-label={danger ? "Temps presque écoulé" : "Compte à rebours"}
+    >
       <div className={`countdown-fill ${danger ? "danger" : ""}`} style={{ width: `${pct}%` }} />
     </div>
   );

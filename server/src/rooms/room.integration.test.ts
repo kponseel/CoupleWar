@@ -173,6 +173,34 @@ test("Room : reconnexion en plein round renvoie le payload courant (resync §14)
   room.dispose();
 });
 
+test("Room : forceReveal (hôte) termine la phase ; refusé pour un non-hôte (§A3)", async () => {
+  const { room, players } = setupRoom();
+  room.startGame();
+  await sleep(40);
+  assert.equal(room.data.state, "ROUND_PLAY");
+
+  // Un joueur normal ne peut pas forcer.
+  const denied = room.forceReveal(players.a1.id);
+  assert.equal(denied.forced, false);
+  assert.equal(denied.reason, "not_host");
+  assert.equal(room.data.state, "ROUND_PLAY");
+
+  // L'hôte force → on quitte immédiatement ROUND_PLAY.
+  const forced = room.forceReveal(players.h.id);
+  assert.equal(forced.forced, true);
+  assert.notEqual(room.data.state, "ROUND_PLAY");
+  room.dispose();
+});
+
+test("Room : forceReveal refusé hors phase de jeu", () => {
+  const { room, players } = setupRoom();
+  // Avant le démarrage (LOBBY/PAIRING) : pas de phase de jeu.
+  const res = room.forceReveal(players.h.id);
+  assert.equal(res.forced, false);
+  assert.equal(res.reason, "not_in_play");
+  room.dispose();
+});
+
 test("Room : quota deep respecté sur une partie (jamais plus que la config)", async () => {
   // Config avec quota 0 → aucune question deep ne doit sortir.
   const cfg: GameConfig = { ...fastConfig, tone: { ...fastConfig.tone, maxDeepQuestionsPerGame: 0 } };

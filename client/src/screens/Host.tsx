@@ -122,6 +122,7 @@ function HostIntro() {
 
 function HostPlay({ snapshot }: { snapshot: RoomSnapshot }) {
   const play = useStore((s) => s.play);
+  const forceReveal = useStore((s) => s.forceReveal);
   if (!play)
     return (
       <HostShell>
@@ -133,6 +134,10 @@ function HostPlay({ snapshot }: { snapshot: RoomSnapshot }) {
       <div className="host-play">
         <Countdown start={play.serverStartTime} deadline={play.deadline} />
         {renderHostPlay(play, snapshot)}
+        {/* Anti-blocage : l'hôte peut révéler sans attendre les retardataires (§A3). */}
+        <button className="btn btn-ghost host-force" onClick={() => void forceReveal()}>
+          ⏭️ Révéler maintenant
+        </button>
       </div>
     </HostShell>
   );

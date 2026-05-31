@@ -213,3 +213,67 @@ input {
   .host-lobby { grid-template-columns: 1fr; gap: 24px; }
   .couples-panel { text-align: center; }
 }
+
+/* Bouton hôte « Révéler maintenant » (anti-blocage §A3) : discret, en bas. */
+.host-force {
+  margin-top: 28px;
+  opacity: 0.7;
+  font-size: 0.95rem;
+}
+.host-force:hover { opacity: 1; }
+
+/* ============================================================
+   Accessibilité & UX mobile (§A4)
+   ============================================================ */
+
+/* Focus clavier visible (navigation, accessibilité). */
+.btn:focus-visible,
+input:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* Cibles tactiles : garantir ≥ 44px partout (recommandation WCAG/Apple). */
+.btn,
+input,
+.answer-btn,
+.option {
+  min-height: 48px;
+}
+
+/* Respect des préférences système : on coupe les animations non essentielles. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Le flash collectif reste mais sans pulsation prolongée. */
+  .pulse,
+  .heartbeat,
+  .spinner {
+    animation: none !important;
+  }
+}
+
+/* Safe-area iOS (encoche / barre home) : le contenu ne passe pas dessous. */
+.player-screen,
+.host-screen,
+.lobby {
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+/* Clavier mobile : sur les écrans de saisie, on garde le bouton d'action
+   accessible en autorisant le défilement plutôt qu'un centrage rigide. */
+@media (max-height: 560px) {
+  .player-screen {
+    justify-content: flex-start;
+    overflow-y: auto;
+  }
+}

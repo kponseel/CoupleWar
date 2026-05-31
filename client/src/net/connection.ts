@@ -134,9 +134,10 @@ async function recalibrateAndResume(): Promise<void> {
       if (res.ok) {
         set({ role: session.role, roomCode: session.roomCode, playerId: session.playerId });
       } else {
-        // Room expirée / joueur inconnu : on nettoie et on revient à l'accueil.
+        // Room expirée / joueur inconnu : on nettoie, on revient à l'accueil et
+        // on explique pourquoi (sinon le retour brutal au lobby est déroutant).
         clearSession();
-        set({ role: null, roomCode: null, playerId: null });
+        set({ role: null, roomCode: null, playerId: null, error: "room_expired" });
       }
     });
   }

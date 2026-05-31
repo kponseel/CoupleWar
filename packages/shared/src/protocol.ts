@@ -105,6 +105,8 @@ export interface ClientToServer {
 
   // Contrôle host
   "game:start": (cb: Ack<{ started: boolean }>) => void;
+  // Anti-blocage : l'hôte force la fin de la phase de jeu en cours (§A3).
+  "game:forceReveal": (cb: Ack<{ forced: boolean }>) => void;
 
   // Réponses de jeu (datées via offset client §3.3)
   "answer:submit": (
