@@ -180,6 +180,8 @@ function PlayView() {
   if (play.mode === "sync") return <SyncPlay play={play} />;
   if (play.mode === "auction" && play.phase === "answer") return <AuctionAnswer play={play} />;
   if (play.mode === "auction" && play.phase === "bet") return <AuctionBet play={play} />;
+  if (play.mode === "wavelength" && play.phase === "clue") return <WavelengthClue play={play} />;
+  if (play.mode === "wavelength" && play.phase === "reception") return <WavelengthReception play={play} />;
   return <CenterMsg title="Regarde la TV" />;
 }
 
@@ -297,6 +299,110 @@ function AuctionBet({ play }: { play: Extract<PlayPayload, { mode: "auction"; ph
         >
           Parier {tokens} 💖
         </button>
+      </div>
+    </div>
+  );
+}
+
+// --- Wavelength (§6) ---
+
+function WavelengthClue({ play }: { play: Extract<PlayPayload, { mode: "wavelength"; phase: "clue" }> }) {
+  const playerId = useStore((s) => s.playerId);
+  const answered = useStore((s) => s.answered);
+  const submitAnswer = useStore((s) => s.submitAnswer);
+  const [clue, setClue] = useState("");
+  const isEmitter = play.emitterPlayerId === playerId;
+
+  if (!isEmitter) return <CenterMsg title="🎯 L'Émetteur cherche LE mot…" subtitle="Préparez vos paris !" />;
+  if (answered) return <CenterMsg title="Indice envoyé !" subtitle="À ton/ta partenaire de viser." />;
+
+  return (
+    <div className="player-screen">
+      <Countdown start={play.serverStartTime} deadline={play.deadline} />
+      <div className="badge-role">Tu es l'Émetteur 🎯</div>
+      <h2 className="question">Guide ton/ta partenaire vers la cible</h2>
+      <Spectrum left={play.poleLeft} right={play.poleRight} target={play.target ?? null} cursor={null} />
+      <p className="hint">UN seul mot (max {play.clueMaxChars} caractères).</p>
+      <div className="free-text">
+        <input
+          value={clue}
+          maxLength={play.clueMaxChars}
+          onChange={(e) => setClue(e.target.value)}
+          placeholder="ton indice…"
+          aria-label="Indice"
+        />
+        <button className="btn btn-ghost" disabled={!clue.trim()} onClick={() => void submitAnswer(clue.trim())}>
+          Envoyer
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function WavelengthReception({ play }: { play: Extract<PlayPayload, { mode: "wavelength"; phase: "reception" }> }) {
+  const playerId = useStore((s) => s.playerId);
+  const myCoupleId = useStore(selectMyCoupleId);
+  const answered = useStore((s) => s.answered);
+  const betPlaced = useStore((s) => s.betPlaced);
+  const submitAnswer = useStore((s) => s.submitAnswer);
+  const submitBet = useStore((s) => s.submitBet);
+  const [cursor, setCursor] = useState(50);
+
+  const isReceiver = play.receiverPlayerId === playerId;
+  const isActiveCouple = myCoupleId === play.emitterCoupleId;
+
+  if (isReceiver) {
+    if (answered) return <CenterMsg title="Position validée !" subtitle="Révélation imminente…" />;
+    return (
+      <div className="player-screen">
+        <Countdown start={play.serverStartTime} deadline={play.deadline} />
+        <div className="badge-role">Tu es le Récepteur</div>
+        <h2 className="question">Indice : « {play.clue} »</h2>
+        <Spectrum left={play.poleLeft} right={play.poleRight} target={null} cursor={cursor} />
+        <input
+          className="wave-slider"
+          type="range"
+          min={0}
+          max={100}
+          value={cursor}
+          onChange={(e) => setCursor(Number(e.target.value))}
+          aria-label="Position du curseur"
+        />
+        <button className="btn btn-primary btn-xl" onClick={() => void submitAnswer(String(cursor))}>
+          Valider la position
+        </button>
+      </div>
+    );
+  }
+
+  if (isActiveCouple) return <CenterMsg title="🎯 Ton/ta partenaire place le curseur…" />;
+
+  if (betPlaced) return <CenterMsg title="Pari enregistré !" subtitle="Suspense…" />;
+  return (
+    <div className="player-screen">
+      <Countdown start={play.serverStartTime} deadline={play.deadline} />
+      <h2 className="question">Indice : « {play.clue} »</h2>
+      <p className="hint">Où est la vraie cible par rapport au curseur du Récepteur ?</p>
+      <div className="bet-directions">
+        <button className="btn btn-ghost btn-xl" onClick={() => void submitBet("left", 0)}>← Plus à gauche</button>
+        <button className="btn btn-ghost btn-xl" onClick={() => void submitBet("bullseye", 0)}>🎯 Dans le mille</button>
+        <button className="btn btn-ghost btn-xl" onClick={() => void submitBet("right", 0)}>Plus à droite →</button>
+      </div>
+    </div>
+  );
+}
+
+/** Spectre horizontal 0..100 avec cible (émetteur) et/ou curseur (récepteur). */
+function Spectrum({ left, right, target, cursor }: { left: string; right: string; target: number | null; cursor: number | null }) {
+  return (
+    <div className="spectrum">
+      <div className="spectrum-bar">
+        {target !== null && <div className="spectrum-target" style={{ left: `${target}%` }} aria-hidden />}
+        {cursor !== null && <div className="spectrum-cursor" style={{ left: `${cursor}%` }} aria-hidden />}
+      </div>
+      <div className="spectrum-poles">
+        <span>{left}</span>
+        <span>{right}</span>
       </div>
     </div>
   );

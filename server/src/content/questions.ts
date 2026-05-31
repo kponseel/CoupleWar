@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { randomInt } from "node:crypto";
 import type { GameMode, Intensity, Question } from "@couplewar/shared";
@@ -16,9 +16,12 @@ export class QuestionBank {
     const files: Array<[GameMode, string]> = [
       ["sync", "questions.sync.json"],
       ["auction", "questions.auction.json"],
+      ["wavelength", "questions.wavelength.json"],
     ];
     for (const [mode, file] of files) {
-      const raw = readFileSync(resolve(contentDir, file), "utf8");
+      const path = resolve(contentDir, file);
+      if (!existsSync(path)) continue; // mode optionnel (contenu pas encore fourni)
+      const raw = readFileSync(path, "utf8");
       const questions = JSON.parse(raw) as Question[];
       this.byMode.set(mode, questions);
     }

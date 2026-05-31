@@ -189,7 +189,39 @@ function renderHostPlay(play: PlayPayload, snapshot: RoomSnapshot) {
       </>
     );
   }
+  if (play.mode === "wavelength" && play.phase === "clue") {
+    const emitter = snapshot.players.find((p) => p.id === play.emitterPlayerId);
+    return (
+      <>
+        <div className="phase-tag">WAVELENGTH · indice secret</div>
+        <HostSpectrum left={play.poleLeft} right={play.poleRight} />
+        <p className="host-hint pulse">🎯 {emitter?.name} cherche le mot parfait…</p>
+      </>
+    );
+  }
+  if (play.mode === "wavelength" && play.phase === "reception") {
+    return (
+      <>
+        <div className="phase-tag">WAVELENGTH · à vous de viser</div>
+        <h1 className="host-question">Indice : « {play.clue} »</h1>
+        <HostSpectrum left={play.poleLeft} right={play.poleRight} />
+        <p className="host-hint pulse">📱 Le Récepteur vise, les autres parient…</p>
+      </>
+    );
+  }
   return null;
+}
+
+function HostSpectrum({ left, right }: { left: string; right: string }) {
+  return (
+    <div className="spectrum host-spectrum">
+      <div className="spectrum-bar" />
+      <div className="spectrum-poles">
+        <span>{left}</span>
+        <span>{right}</span>
+      </div>
+    </div>
+  );
 }
 
 function HostReveal() {
@@ -244,6 +276,19 @@ function detailText(reveal: RevealPayload, pc: RevealPayload["perCouple"][number
     }
     return d.correct ? "💰 Bon pari !" : "💸 Mise perdue";
   }
+  if (reveal.mode === "wavelength") {
+    if (d.role === "active") {
+      const ring = d.ring as string;
+      return ring === "bullseye"
+        ? "🎯 En plein dans le mille !"
+        : ring === "mid"
+          ? "👍 Bien visé"
+          : ring === "outer"
+            ? "🆗 Pas loin"
+            : "❌ Loin du compte";
+    }
+    return pc.deltaScore > 0 ? "✅ Bon pari !" : "🙈 Raté";
+  }
   return "";
 }
 
@@ -296,5 +341,6 @@ function HostResults() {
 function modeTitle(mode: string): string {
   if (mode === "sync") return "⚡ SYNC";
   if (mode === "auction") return "💰 AUX ENCHÈRES DE L'AUTRE";
+  if (mode === "wavelength") return "🎯 WAVELENGTH";
   return mode.toUpperCase();
 }

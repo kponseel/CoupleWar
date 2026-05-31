@@ -33,6 +33,11 @@ export const gameConfigSchema = z.object({
     betCorrectPts: z.number(),
     betBullseyePts: z.number(),
     emojiGridSize: z.number().int().positive(),
+    // Demi-largeurs des anneaux (échelle 0..100) autour de la cible (§6.2).
+    bullseyeRadius: z.number().positive(),
+    midRadius: z.number().positive(),
+    outerRadius: z.number().positive(),
+    clueMaxChars: z.number().int().positive(),
   }),
   auction: z.object({
     answerTimeMs: z.number().positive(),

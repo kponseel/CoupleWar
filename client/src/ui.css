@@ -277,3 +277,56 @@ input,
     overflow-y: auto;
   }
 }
+
+/* ============================================================
+   Wavelength (§6)
+   ============================================================ */
+.role-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+.spectrum { width: 100%; margin: 18px 0; }
+.spectrum-bar {
+  position: relative;
+  height: 22px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #6c5ce7, #00b894, #fdcb6e, #e0245e);
+}
+.spectrum-target {
+  position: absolute;
+  top: -6px;
+  width: 4px;
+  height: 34px;
+  background: #fff;
+  border-radius: 2px;
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+}
+.spectrum-cursor {
+  position: absolute;
+  top: -10px;
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 14px solid var(--gold);
+  transform: translateX(-50%);
+}
+.spectrum-poles {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.wave-slider { width: 100%; margin: 8px 0 18px; height: 44px; }
+.bet-directions { display: flex; flex-direction: column; gap: 10px; }
+.host-spectrum { max-width: 700px; margin: 24px auto; }
+.host-spectrum .spectrum-bar { height: 30px; }
+.host-spectrum .spectrum-poles { font-size: 1.1rem; }

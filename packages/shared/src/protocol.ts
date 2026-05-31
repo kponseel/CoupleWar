@@ -52,7 +52,44 @@ export interface AuctionBetPhase {
   deadline: number;
 }
 
-export type PlayPayload = PlayPayloadSync | AuctionAnswerPhase | AuctionBetPhase;
+/** Wavelength (§6) — phase « indice » : l'Émetteur voit la cible et tape un mot. */
+export interface WavelengthCluePhase {
+  mode: "wavelength";
+  phase: "clue";
+  questionId: string;
+  text: string;
+  poleLeft: string;
+  poleRight: string;
+  emitterPlayerId: string;
+  emitterCoupleId: string;
+  /** Cible 0..100, envoyée UNIQUEMENT à l'Émetteur. */
+  target?: number;
+  clueMaxChars: number;
+  serverStartTime: number;
+  deadline: number;
+}
+
+/** Wavelength — phase « réception + paris » : indice révélé à tous. */
+export interface WavelengthReceptionPhase {
+  mode: "wavelength";
+  phase: "reception";
+  questionId: string;
+  text: string;
+  poleLeft: string;
+  poleRight: string;
+  clue: string;
+  emitterCoupleId: string;
+  receiverPlayerId: string;
+  serverStartTime: number;
+  deadline: number;
+}
+
+export type PlayPayload =
+  | PlayPayloadSync
+  | AuctionAnswerPhase
+  | AuctionBetPhase
+  | WavelengthCluePhase
+  | WavelengthReceptionPhase;
 
 /** Reveal couple-par-couple générique (§5.2 / §7.3). */
 export interface RevealPayload {

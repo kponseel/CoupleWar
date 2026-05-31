@@ -75,6 +75,10 @@ export function initConnection(): void {
       patch.betPlaced = false;
     } else if (p.mode === "sync") {
       patch.answered = false;
+    } else if (p.mode === "wavelength") {
+      // Nouvelle phase Wavelength : réarme les indicateurs de saisie/pari.
+      patch.answered = false;
+      patch.betPlaced = false;
     }
     set(patch);
   });
@@ -183,5 +187,6 @@ function rainHearts(): void {
 function modeLabel(mode: string): string {
   if (mode === "sync") return "Sync !";
   if (mode === "auction") return "Aux enchères de l'autre !";
+  if (mode === "wavelength") return "Wavelength !";
   return mode;
 }

@@ -25,10 +25,12 @@ import { makeCoupleJoinCode, makeId } from "../util/ids.js";
 import type { ModeFactory, RoundContext, RoundController } from "../engine/modes/types.js";
 import { createSyncMode } from "../engine/modes/syncMode.js";
 import { createAuctionMode } from "../engine/modes/auctionMode.js";
+import { createWavelengthMode } from "../engine/modes/wavelengthMode.js";
 
 const MODE_FACTORIES: Partial<Record<GameMode, ModeFactory>> = {
   sync: createSyncMode,
   auction: createAuctionMode,
+  wavelength: createWavelengthMode,
 };
 
 export interface RoomDeps {

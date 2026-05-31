@@ -37,7 +37,11 @@
     "outerPts": 2,
     "betCorrectPts": 1,
     "betBullseyePts": 2,
-    "emojiGridSize": 60
+    "emojiGridSize": 60,
+    "bullseyeRadius": 5,
+    "midRadius": 12,
+    "outerRadius": 22,
+    "clueMaxChars": 20
   },
 
   // Mode C — Enchères (§7.3). 1 jeton = tokenToPoints ; gain x winMultiplier.
