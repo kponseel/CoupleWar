@@ -46,10 +46,19 @@ test("QuestionBank : usedIds évite la répétition tant que le pool n'est pas �
   assert.notEqual(second!.id, first!.id);
 });
 
-test("QuestionBank : mode inconnu renvoie null", () => {
+test("QuestionBank : mode sans contenu chargé renvoie null", () => {
   const bank = new QuestionBank();
   bank.load(contentDir);
-  assert.equal(bank.pick("wavelength", "light", 2, new Set()), null);
+  // mime_d1 n'a pas de fichier de questions → aucune pioche possible.
+  assert.equal(bank.pick("mime_d1", "light", 2, new Set()), null);
+});
+
+test("QuestionBank : wavelength est désormais chargé et piochable", () => {
+  const bank = new QuestionBank();
+  bank.load(contentDir);
+  const q = bank.pick("wavelength", "light", 2, new Set());
+  assert.ok(q, "doit trouver une question wavelength");
+  assert.equal(q.mode, "wavelength");
 });
 
 // --- Noms de couples (§4.3) ---

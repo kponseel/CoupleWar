@@ -100,9 +100,14 @@ export const createWavelengthMode: ModeFactory = (ctx: RoundContext): RoundContr
         serverStartTime,
         deadline,
       };
-      ctx.broadcast("round:play", publicPayload);
-      // L'Émetteur SEUL reçoit la cible (émis après le broadcast → écrase côté client).
-      ctx.emitToPlayer(emitterId, "round:play", { ...publicPayload, target });
+      // Émission PAR JOUEUR : chaque socket reçoit exactement UN payload de clue.
+      // L'Émetteur SEUL reçoit la cible ; tous les autres (joueurs + host) ne la
+      // voient jamais. On évite ainsi toute fuite et tout payload "no-target"
+      // transitoire chez l'Émetteur.
+      for (const p of ctx.playersById.values()) {
+        if (p.id === emitterId) ctx.emitToPlayer(p.id, "round:play", { ...publicPayload, target });
+        else ctx.emitToPlayer(p.id, "round:play", publicPayload);
+      }
       // Si l'Émetteur ne donne pas d'indice à temps → on passe quand même.
       timer = setTimeout(startReception, cfg.clueTimeMs);
     },

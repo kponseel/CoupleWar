@@ -64,7 +64,7 @@ But : que la v1.0 actuelle soit **réellement jouable en soirée** et **déploy�
 
 ## JALON B — v1.1 : enrichir le jeu (après feu vert)
 
-### B1. Mode Wavelength (§6) ⬜ ⏱️2.5j
+### B1. Mode Wavelength (§6) ✅ ⏱️2.5j
 Le plus simple à brancher sur le moteur générique (plugin asymétrique).
 - [ ] Plugin `wavelengthMode` : Émetteur voit la cible, donne 1 mot/emoji ; Récepteur place le curseur ; autres couples parient la direction
 - [ ] Scoring §6.4 (anneaux 4/3/2, paris +1/+2, catch-up dernier)
