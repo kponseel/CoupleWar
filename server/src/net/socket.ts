@@ -3,6 +3,7 @@ import type { ClientToServer, ServerToClient } from "@couplewar/shared";
 import { clock } from "../engine/clock.js";
 import type { RoomManager } from "../rooms/RoomManager.js";
 import type { Room } from "../rooms/Room.js";
+import { TokenBucket, DEFAULT_RATE } from "./rateLimit.js";
 
 interface SocketData {
   roomCode: string | null;
@@ -42,6 +43,19 @@ export function registerSocketHandlers(io: Server, rooms: RoomManager): void {
     const socket = rawSocket as unknown as CWSocket;
     socket.data.roomCode = null;
     socket.data.playerId = null;
+
+    // Rate limiting par socket : un client qui spamme des événements est ignoré
+    // (token bucket). Limites larges → invisible pour un joueur normal.
+    const bucket = new TokenBucket(DEFAULT_RATE);
+    socket.use((_event, next) => {
+      if (bucket.take()) return next();
+      // Au-delà de la limite : on droppe l'événement silencieusement (pas d'ack).
+      next(new Error("rate_limited"));
+    });
+    // Évite un crash : une erreur de middleware est émise sur le socket.
+    socket.on("error", () => {
+      /* erreur de rate-limit / middleware : ignorée côté serveur */
+    });
 
     // --- Synchro d'horloge (§3.2) : ack avec le temps serveur ---
     socket.on("clock:ping", (cb) => {

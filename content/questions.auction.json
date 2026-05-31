@@ -52,5 +52,95 @@
     "tags": ["desire"],
     "text": "Qu'est-ce qui fait se sentir le plus aimé(e) le Cible ?",
     "options": ["Un compliment", "Un câlin", "Un service rendu", "Du temps ensemble"]
+  },
+  {
+    "id": "q_auc_0007",
+    "mode": "auction",
+    "intensity": "light",
+    "category": "open_tabs",
+    "tags": ["daily"],
+    "text": "Quelle appli le Cible ouvre en premier le matin ?",
+    "options": ["Instagram", "La météo", "Les mails du boulot", "WhatsApp"]
+  },
+  {
+    "id": "q_auc_0008",
+    "mode": "auction",
+    "intensity": "light",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "Le Cible, devant un buffet à volonté, fonce d'abord sur…",
+    "options": ["Les frites", "Le fromage", "Les desserts", "Les sushis"]
+  },
+  {
+    "id": "q_auc_0009",
+    "mode": "auction",
+    "intensity": "light",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Le guilty pleasure télé du Cible, c'est…",
+    "options": ["La télé-réalité", "Les docs animaliers", "Le sport", "Les vieux films"]
+  },
+  {
+    "id": "q_auc_0010",
+    "mode": "auction",
+    "intensity": "medium",
+    "category": "mythologie",
+    "tags": ["daily"],
+    "text": "Si le Cible était un personnage de dessin animé, ce serait…",
+    "options": ["Un héros déterminé", "Le comique de service", "Le cerveau du groupe", "Le grognon attachant"]
+  },
+  {
+    "id": "q_auc_0011",
+    "mode": "auction",
+    "intensity": "medium",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "La corvée que le Cible déteste le plus, c'est…",
+    "options": ["Le repassage", "La vaisselle", "Sortir les poubelles", "Faire les courses"]
+  },
+  {
+    "id": "q_auc_0012",
+    "mode": "auction",
+    "intensity": "light",
+    "category": "open_tabs",
+    "tags": ["daily"],
+    "text": "Le Cible a combien d'onglets ouverts en ce moment ?",
+    "options": ["1 ou 2", "Une petite dizaine", "Tellement qu'on ne voit plus les titres", "Aucun, il/elle ferme tout"]
+  },
+  {
+    "id": "q_auc_0013",
+    "mode": "auction",
+    "intensity": "medium",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "En road-trip, le Cible serait plutôt…",
+    "options": ["Le DJ", "Le copilote GPS", "Celui qui dort", "Celui qui a faim tout le temps"]
+  },
+  {
+    "id": "q_auc_0014",
+    "mode": "auction",
+    "intensity": "medium",
+    "category": "mythologie",
+    "tags": ["future"],
+    "text": "Le rêve un peu fou que le Cible n'a jamais osé réaliser ?",
+    "options": ["Un grand voyage", "Apprendre un instrument", "Monter un projet", "Sauter en parachute"]
+  },
+  {
+    "id": "q_auc_0015",
+    "mode": "auction",
+    "intensity": "light",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "Le Cible, en retard, met sa faute sur…",
+    "options": ["Les transports", "Le réveil", "L'autre (toi)", "Il/elle assume, jamais en retard"]
+  },
+  {
+    "id": "q_auc_0016",
+    "mode": "auction",
+    "intensity": "deep",
+    "category": "curseur_desir",
+    "tags": ["desire"],
+    "text": "Ce qui détend vraiment le Cible après une dure journée ?",
+    "options": ["Un bon repas", "Un câlin", "Du silence", "Parler de sa journée"]
   }
 ]

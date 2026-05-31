@@ -70,5 +70,113 @@
     "tags": ["future"],
     "text": "Dans 10 ans, vous vous imaginez plutôt…",
     "options": ["À la campagne", "En ville", "À l'étranger", "Exactement ici"]
+  },
+  {
+    "id": "q_sync_0009",
+    "mode": "sync",
+    "intensity": "light",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "Le réveil sonne un dimanche. Qui se lève en premier ?",
+    "options": ["Moi, toujours", "L'autre, toujours", "Le chat/chien nous force", "Personne avant midi"]
+  },
+  {
+    "id": "q_sync_0010",
+    "mode": "sync",
+    "intensity": "light",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Votre soirée idéale à deux, c'est plutôt…",
+    "options": ["Canapé + série", "Resto", "Sortie entre amis", "Rien de prévu, on improvise"]
+  },
+  {
+    "id": "q_sync_0011",
+    "mode": "sync",
+    "intensity": "light",
+    "category": "open_tabs",
+    "tags": ["daily"],
+    "text": "Qui a le plus de photos floues dans sa galerie ?",
+    "options": ["Moi", "L'autre", "Les deux", "Aucun, on est des pros"]
+  },
+  {
+    "id": "q_sync_0012",
+    "mode": "sync",
+    "intensity": "medium",
+    "category": "mythologie",
+    "tags": ["daily"],
+    "text": "La chanson qui résume votre couple serait plutôt…",
+    "options": ["Un slow", "Un tube de l'été", "Un truc des années 80", "Une musique de pub"]
+  },
+  {
+    "id": "q_sync_0013",
+    "mode": "sync",
+    "intensity": "medium",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "En cas de zombie apocalypse, votre couple…",
+    "options": ["Survit en équipe", "Panique total", "Se cache et attend", "Devient chef des survivants"]
+  },
+  {
+    "id": "q_sync_0014",
+    "mode": "sync",
+    "intensity": "light",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Au restaurant, qui goûte dans l'assiette de l'autre ?",
+    "options": ["Moi", "L'autre", "Les deux, sans demander", "Personne, chacun son plat"]
+  },
+  {
+    "id": "q_sync_0015",
+    "mode": "sync",
+    "intensity": "light",
+    "category": "open_tabs",
+    "tags": ["daily"],
+    "text": "Qui répond le plus vite aux messages ?",
+    "options": ["Moi", "L'autre", "Les deux instantanément", "Personne, on oublie"]
+  },
+  {
+    "id": "q_sync_0016",
+    "mode": "sync",
+    "intensity": "medium",
+    "category": "mythologie",
+    "tags": ["daily"],
+    "text": "Votre super-pouvoir de couple serait…",
+    "options": ["Lire dans les pensées", "Téléportation aux vacances", "Cuisine illimitée", "Sommeil parfait"]
+  },
+  {
+    "id": "q_sync_0017",
+    "mode": "sync",
+    "intensity": "medium",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Qui dit « on rentre ? » en premier à une soirée ?",
+    "options": ["Moi", "L'autre", "Les deux en même temps", "Personne, on ferme le bar"]
+  },
+  {
+    "id": "q_sync_0018",
+    "mode": "sync",
+    "intensity": "light",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "Le dessert à partager, vous le finissez…",
+    "options": ["Moi surtout", "L'autre surtout", "Moitié-moitié pile", "On en recommande un deuxième"]
+  },
+  {
+    "id": "q_sync_0019",
+    "mode": "sync",
+    "intensity": "deep",
+    "category": "curseur_desir",
+    "tags": ["future"],
+    "text": "Le prochain grand projet de votre couple, ce serait…",
+    "options": ["Un voyage", "Un déménagement", "Un animal", "Souffler un peu, déjà"]
+  },
+  {
+    "id": "q_sync_0020",
+    "mode": "sync",
+    "intensity": "light",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Qui choisit la destination des vacances ?",
+    "options": ["Moi", "L'autre", "On décide ensemble", "Le budget décide pour nous"]
   }
 ]
