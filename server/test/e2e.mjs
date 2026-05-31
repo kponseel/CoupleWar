@@ -83,7 +83,7 @@ async function main() {
   });
 
   // --- Lancement ---
-  const start = await ack(host, "game:start");
+  const start = await ack(host, "game:start", {});
   if (!start.ok) fail(`game:start: ${start.error}`);
   log("Partie lancée");
 

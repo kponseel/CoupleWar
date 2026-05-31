@@ -67,7 +67,7 @@ async function main() {
   }
   host.on("round:reveal", (r) => { if (r.mode === "wavelength") revealOk = true; });
 
-  const start = await ack(host, "game:start");
+  const start = await ack(host, "game:start", {});
   if (!start.ok) fail("start: " + start.error);
   log("partie lancée");
 

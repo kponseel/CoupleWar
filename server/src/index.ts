@@ -36,6 +36,9 @@ async function main(): Promise<void> {
   const httpServer = createServer(app);
   const io = new Server(httpServer, {
     cors: { origin: env.corsOrigins, methods: ["GET", "POST"] },
+    // Réduit la surface DoS : les payloads de jeu sont minuscules (réponses,
+    // mises, indices courts). 64 KB est très large pour ça et coupe les abus.
+    maxHttpBufferSize: 64_000,
   });
 
   const rooms = new RoomManager(io, config, bank);

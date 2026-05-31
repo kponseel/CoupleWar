@@ -159,7 +159,11 @@ export function registerSocketHandlers(io: Server, rooms: RoomManager): void {
     });
 
     // --- Démarrage (host) ---
-    socket.on("game:start", (p, cb) => {
+    // Tolère les deux signatures : `game:start({solo?}, cb)` (actuel) et
+    // `game:start(cb)` (ancien client) — l'ack peut arriver en 1er ou 2e argument.
+    socket.on("game:start", (a: unknown, b?: unknown) => {
+      const cb = typeof a === "function" ? a : b;
+      const p = typeof a === "function" ? undefined : a;
       const ack = safeAck(cb);
       const code = socket.data.roomCode;
       const pid = socket.data.playerId;

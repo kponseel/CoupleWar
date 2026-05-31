@@ -28,7 +28,8 @@
     "lateToleranceMs": 200      // tolérance avant rejet "too_late"
   },
 
-  // Mode B — Wavelength (§6). Présent pour la config, branché en v1.1.
+  // Mode B — Wavelength (§6). BRANCHÉ et jouable. bullseye/mid/outerRadius =
+  // demi-largeurs des anneaux (0..100) ; clueMaxChars = longueur max de l'indice.
   "wavelength": {
     "clueTimeMs": 5000,
     "receiveTimeMs": 10000,
@@ -107,8 +108,8 @@
     "reconnectGraceMs": 30000
   },
 
-  // Séquence de rounds du MVP (modes branchés : sync, auction).
-  // Étend cette liste quand wavelength/mime arrivent. Le dernier round = FINALE.
+  // Séquence de rounds (modes branchés : sync, auction, wavelength).
+  // Étend cette liste quand de nouveaux modes arrivent. Le dernier round = FINALE.
   "roundPlan": [
     { "mode": "sync",    "intensityMax": "light" },
     { "mode": "auction", "intensityMax": "medium" },

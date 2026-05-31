@@ -21,10 +21,13 @@ const baseConfig = gameConfigSchema.parse(
 );
 
 // Config rapide pour faire défiler la state-machine sans attendre les vrais timers.
+// Le roundPlan exerce LES TROIS modes (sync, auction, wavelength) → la machine
+// d'état Wavelength est couverte en intégration (solo ET multi-couples).
 const fastConfig: GameConfig = {
   ...baseConfig,
   sync: { ...baseConfig.sync, deadlineMs: 200 },
   auction: { ...baseConfig.auction, answerTimeMs: 200, betTimeMs: 200 },
+  wavelength: { ...baseConfig.wavelength, clueTimeMs: 200, receiveTimeMs: 200 },
   introMs: 10,
   revealHoldMs: 10,
   interludeMs: 10,
@@ -33,6 +36,7 @@ const fastConfig: GameConfig = {
   roundPlan: [
     { mode: "sync", intensityMax: "light" },
     { mode: "auction", intensityMax: "medium" },
+    { mode: "wavelength", intensityMax: "light" },
     { mode: "sync", intensityMax: "medium", finale: true },
   ],
 };
@@ -58,6 +62,67 @@ function makeFakeIo() {
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Config dont le PREMIER round est wavelength (pour tester la phase clue isolément). */
+const waveFirstConfig: GameConfig = {
+  ...fastConfig,
+  roundPlan: [
+    { mode: "wavelength", intensityMax: "light" },
+    { mode: "sync", intensityMax: "light", finale: true },
+  ],
+};
+
+test("Wavelength : la cible n'est émise QU'À l'Émetteur (anti-fuite §6)", async () => {
+  const { io, events } = makeFakeIo();
+  const room = new Room("WAVE", { io, config: waveFirstConfig, questionBank: bank });
+  const h = room.addPlayer("s_host", "Host", true);
+  const a1 = room.addPlayer("s_a1", "Alex", false);
+  const a2 = room.addPlayer("s_a2", "Sam", false);
+  const b1 = room.addPlayer("s_b1", "Lou", false);
+  const b2 = room.addPlayer("s_b2", "Max", false);
+  const cA = room.createCouple(a1.id) as { joinCode: string };
+  room.joinCouple(a2.id, cA.joinCode);
+  const cB = room.createCouple(b1.id) as { joinCode: string };
+  room.joinCouple(b2.id, cB.joinCode);
+  room.startGame();
+  await sleep(40); // intro → ROUND_PLAY (clue)
+  assert.equal(room.data.currentMode, "wavelength");
+
+  // Parmi tous les round:play émis pendant la phase clue : exactement UN porte la cible.
+  const clueEvents = events.filter(
+    (e) => e.event === "round:play" && (e.args[0] as { phase?: string }).phase === "clue",
+  );
+  assert.ok(clueEvents.length >= 5, "chaque joueur+host reçoit un payload clue");
+  const withTarget = clueEvents.filter((e) => (e.args[0] as { target?: number }).target !== undefined);
+  assert.equal(withTarget.length, 1, "une seule émission porte la cible");
+  // …et elle a été émise vers le socket de l'Émetteur (e.target = cible d'émission).
+  const emitterId = (clueEvents[0].args[0] as { emitterPlayerId: string }).emitterPlayerId;
+  const emitterSocket = room.data.players.get(emitterId)?.socketId;
+  assert.equal(withTarget[0].target, emitterSocket);
+  room.dispose();
+});
+
+test("Wavelength : forceReveal pendant la phase clue ne plante pas (§A3)", async () => {
+  const { io } = makeFakeIo();
+  const room = new Room("WAVE2", { io, config: waveFirstConfig, questionBank: bank });
+  const h = room.addPlayer("s_host", "Host", true);
+  const a1 = room.addPlayer("s_a1", "Alex", false);
+  const a2 = room.addPlayer("s_a2", "Sam", false);
+  const b1 = room.addPlayer("s_b1", "Lou", false);
+  const b2 = room.addPlayer("s_b2", "Max", false);
+  const cA = room.createCouple(a1.id) as { joinCode: string };
+  room.joinCouple(a2.id, cA.joinCode);
+  const cB = room.createCouple(b1.id) as { joinCode: string };
+  room.joinCouple(b2.id, cB.joinCode);
+  room.startGame();
+  await sleep(40);
+  assert.equal(room.data.currentMode, "wavelength");
+  // Aucun curseur/indice donné : forceReveal doit révéler sans crash.
+  const res = room.forceReveal(h.id);
+  assert.equal(res.forced, true);
+  assert.notEqual(room.data.state, "ROUND_PLAY");
+  room.dispose();
+});
 
 function setupRoom() {
   const { io, events } = makeFakeIo();
@@ -350,6 +415,18 @@ function drive(
     const opt = (p.options as string[])[0];
     for (const pid of [players.a1.id, players.a2.id, players.b1.id, players.b2.id]) {
       room.submitBet(pid, { questionId: p.questionId as string, option: opt, tokens: p.minBet as number });
+    }
+  } else if (p.mode === "wavelength" && p.phase === "clue") {
+    room.submitAnswer(p.emitterPlayerId as string, {
+      questionId: p.questionId as string,
+      answer: "indice",
+      clientSubmitTime: now,
+    });
+  } else if (p.mode === "wavelength" && p.phase === "reception") {
+    room.submitAnswer(p.receiverPlayerId as string, { questionId: p.questionId as string, answer: "50", clientSubmitTime: now });
+    // Les couples parieurs (non actifs) parient une direction.
+    for (const pid of [players.a1.id, players.a2.id, players.b1.id, players.b2.id]) {
+      room.submitBet(pid, { questionId: p.questionId as string, option: "left", tokens: 0 });
     }
   }
 }

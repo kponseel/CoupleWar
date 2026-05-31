@@ -147,9 +147,13 @@ export const createWavelengthMode: ModeFactory = (ctx: RoundContext): RoundContr
       const coupleId = coupleOf(playerId);
       if (!coupleId) return { accepted: false, reason: "not_paired" };
       if (coupleId === activeCouple.id) return { accepted: false, reason: "active_cannot_bet" };
-      const dir = payload.option as BetDirection;
-      if (!DIRECTIONS.includes(dir)) return { accepted: false, reason: "invalid_direction" };
-      bets.set(coupleId, dir);
+      // Validation de type explicite (pas de cast aveugle) : la direction doit
+      // être une string parmi DIRECTIONS, sinon on rejette.
+      const dir = payload.option;
+      if (typeof dir !== "string" || !DIRECTIONS.includes(dir as BetDirection)) {
+        return { accepted: false, reason: "invalid_direction" };
+      }
+      bets.set(coupleId, dir as BetDirection);
       ctx.emitToPlayer(playerId, "answer:ack", { questionId: q.id, recorded: true });
       maybeComplete();
       return { accepted: true };
