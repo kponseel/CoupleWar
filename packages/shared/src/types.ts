@@ -74,6 +74,8 @@ export interface RoomSnapshot {
   roomCode: string;
   state: GameState;
   configVersion: string;
+  minCouples: number;
+  maxCouples: number;
   currentRound: number; // 1-based, 0 hors round
   totalRounds: number;
   currentMode: GameMode | null;

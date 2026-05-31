@@ -69,10 +69,26 @@ interface AppState {
   submitBet: (option: string, tokens: number) => Promise<void>;
 }
 
+const ACK_TIMEOUT_MS = 8000;
+
+/**
+ * Émet un événement et attend l'ACK serveur, avec un TIMEOUT (§14) : si la
+ * connexion tombe pendant l'envoi, la promesse se résout en échec plutôt que de
+ * rester pendante à jamais (sinon l'état optimiste answered/betPlaced/resuming
+ * ne serait jamais réconcilié).
+ */
 function emitAck<T>(event: string, payload?: unknown): Promise<{ ok: boolean; data?: T; error?: string }> {
   return new Promise((resolve) => {
+    let settled = false;
+    const done = (r: { ok: boolean; data?: T; error?: string }) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(r);
+    };
+    const timer = setTimeout(() => done({ ok: false, error: "timeout" }), ACK_TIMEOUT_MS);
     const cb = (res: { ok: true; data: T } | { ok: false; error: string }) =>
-      resolve(res.ok ? { ok: true, data: res.data } : { ok: false, error: res.error });
+      done(res.ok ? { ok: true, data: res.data } : { ok: false, error: res.error });
     if (payload === undefined) (socket.emit as (e: string, c: unknown) => void)(event, cb);
     else (socket.emit as (e: string, p: unknown, c: unknown) => void)(event, payload, cb);
   });

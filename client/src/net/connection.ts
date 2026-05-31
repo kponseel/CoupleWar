@@ -105,7 +105,13 @@ async function recalibrateAndResume(): Promise<void> {
   // On reprend si une session existe (1re connexion OU reconnexion après coupure).
   if (session) {
     resuming = true;
+    // Garde anti-blocage : si l'ACK ne revient jamais (coupure pendant le resume),
+    // on relâche le flag pour qu'une reconnexion ultérieure puisse réessayer (§14).
+    const guard = window.setTimeout(() => {
+      resuming = false;
+    }, 8000);
     socket.emit("room:resume", { roomCode: session.roomCode, playerId: session.playerId }, (res) => {
+      clearTimeout(guard);
       resuming = false;
       if (res.ok) {
         set({ role: session.role, roomCode: session.roomCode, playerId: session.playerId });

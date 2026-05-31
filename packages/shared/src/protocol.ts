@@ -99,7 +99,6 @@ export interface ClientToServer {
   // Pairing (§4.2 / §4.3)
   "pairing:createCouple": (cb: Ack<{ coupleId: string; joinCode: string; names: string[] }>) => void;
   "pairing:joinCouple": (p: { joinCode: string }, cb: Ack<{ coupleId: string }>) => void;
-  "pairing:tapPair": (p: { targetPlayerId: string }, cb: Ack<{ pending: boolean; coupleId?: string }>) => void;
   "pairing:rerollName": (p: { coupleId: string }, cb: Ack<{ names: string[] }>) => void;
   "pairing:setName": (p: { coupleId: string; name: string }, cb: Ack<{ name: string }>) => void;
   "pairing:ready": (p: { ready: boolean }, cb: Ack<{ ready: boolean }>) => void;

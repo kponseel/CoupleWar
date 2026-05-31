@@ -15,6 +15,11 @@ function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null;
 }
 
+/** Vrai si `v` est une string non vide et ≤ maxLen (validation d'entrée). */
+function isStr(v: unknown, maxLen = 64): v is string {
+  return typeof v === "string" && v.length > 0 && v.length <= maxLen;
+}
+
 /**
  * Enveloppe un ack pour ne jamais lever si le client n'a pas fourni de callback
  * (un client malveillant peut émettre sans ack → un appel direct planterait).
@@ -53,68 +58,90 @@ export function registerSocketHandlers(io: Server, rooms: RoomManager): void {
       cb({ ok: true, data: { roomCode: room.code, playerId: player.id, isHost: true } });
     });
 
-    socket.on("room:join", ({ roomCode, name }, cb) => {
-      const room = rooms.get(roomCode);
-      if (!room) return cb({ ok: false, error: "room_not_found" });
-      if (room.data.state !== "LOBBY" && room.data.state !== "PAIRING") {
-        return cb({ ok: false, error: "game_already_started" });
+    socket.on("room:join", (p, cb) => {
+      const ack = safeAck(cb);
+      // Validation d'entrée : un payload non conforme ne doit jamais crasher le handler.
+      if (!isObject(p) || !isStr(p.roomCode, 12) || !isStr(p.name, 24)) {
+        return ack({ ok: false, error: "bad_payload" });
       }
-      const player = room.addPlayer(socket.id, name, false);
+      const room = rooms.get(p.roomCode);
+      if (!room) return ack({ ok: false, error: "room_not_found" });
+      if (room.data.state !== "LOBBY" && room.data.state !== "PAIRING") {
+        return ack({ ok: false, error: "game_already_started" });
+      }
+      const player = room.addPlayer(socket.id, p.name, false);
       socket.join(room.code);
       socket.data.roomCode = room.code;
       socket.data.playerId = player.id;
-      cb({ ok: true, data: { playerId: player.id, roomCode: room.code } });
+      ack({ ok: true, data: { playerId: player.id, roomCode: room.code } });
     });
 
-    socket.on("room:resume", ({ roomCode, playerId }, cb) => {
-      const room = rooms.get(roomCode);
-      if (!room) return cb({ ok: false, error: "room_not_found" });
-      const player = room.resumePlayer(playerId, socket.id);
-      if (!player) return cb({ ok: false, error: "unknown_player" });
+    socket.on("room:resume", (p, cb) => {
+      const ack = safeAck(cb);
+      if (!isObject(p) || !isStr(p.roomCode, 12) || !isStr(p.playerId, 64)) {
+        return ack({ ok: false, error: "bad_payload" });
+      }
+      const room = rooms.get(p.roomCode);
+      if (!room) return ack({ ok: false, error: "room_not_found" });
+      const player = room.resumePlayer(p.playerId, socket.id);
+      if (!player) return ack({ ok: false, error: "unknown_player" });
       socket.join(room.code);
       socket.data.roomCode = room.code;
       socket.data.playerId = player.id;
-      cb({ ok: true, data: { playerId: player.id, roomCode: room.code } });
+      ack({ ok: true, data: { playerId: player.id, roomCode: room.code } });
     });
 
     // --- Pairing (§4) ---
-    const withRoom = <T>(cb: (res: { ok: false; error: string } | { ok: true; data: T }) => void, fn: (room: Room, playerId: string) => { error: string } | T): void => {
+    const withRoom = <T>(cb: unknown, fn: (room: Room, playerId: string) => { error: string } | T): void => {
+      const ack = safeAck<T>(cb);
       const code = socket.data.roomCode;
       const pid = socket.data.playerId;
-      if (!code || !pid) return cb({ ok: false, error: "no_session" });
+      if (!code || !pid) return ack({ ok: false, error: "no_session" });
       const room = rooms.get(code);
-      if (!room) return cb({ ok: false, error: "room_not_found" });
+      if (!room) return ack({ ok: false, error: "room_not_found" });
       const res = fn(room, pid);
       if (typeof res === "object" && res !== null && "error" in res) {
-        return cb({ ok: false, error: (res as { error: string }).error });
+        return ack({ ok: false, error: (res as { error: string }).error });
       }
-      cb({ ok: true, data: res as T });
+      ack({ ok: true, data: res as T });
     };
+
+    /** Le joueur n'agit que sur SON couple (autorisation). */
+    const ownsCouple = (room: Room, pid: string, coupleId: unknown): boolean =>
+      isStr(coupleId, 64) && room.data.players.get(pid)?.coupleId === coupleId;
 
     socket.on("pairing:createCouple", (cb) => {
       withRoom(cb, (room, pid) => room.createCouple(pid));
     });
-    socket.on("pairing:joinCouple", ({ joinCode }, cb) => {
-      withRoom(cb, (room, pid) => room.joinCouple(pid, joinCode));
+    socket.on("pairing:joinCouple", (p, cb) => {
+      withRoom(cb, (room, pid) =>
+        isObject(p) && isStr(p.joinCode, 8) ? room.joinCouple(pid, p.joinCode) : { error: "bad_payload" },
+      );
     });
-    socket.on("pairing:tapPair", (_p, cb) => {
-      // Tap-to-pair simplifié au MVP : on s'appuie sur le code de couple (§4.2 méthode 1).
-      cb({ ok: false, error: "use_join_code" });
+    socket.on("pairing:rerollName", (p, cb) => {
+      withRoom(cb, (room, pid) =>
+        isObject(p) && ownsCouple(room, pid, p.coupleId)
+          ? room.rerollName(p.coupleId as string)
+          : { error: "not_your_couple" },
+      );
     });
-    socket.on("pairing:rerollName", ({ coupleId }, cb) => {
-      withRoom(cb, (room) => room.rerollName(coupleId));
+    socket.on("pairing:setName", (p, cb) => {
+      withRoom(cb, (room, pid) =>
+        isObject(p) && ownsCouple(room, pid, p.coupleId) && isStr(p.name, 40)
+          ? room.setCoupleName(p.coupleId as string, p.name)
+          : { error: "not_your_couple" },
+      );
     });
-    socket.on("pairing:setName", ({ coupleId, name }, cb) => {
-      withRoom(cb, (room) => room.setCoupleName(coupleId, name));
-    });
-    socket.on("pairing:ready", ({ ready }, cb) => {
+    socket.on("pairing:ready", (p, cb) => {
+      const ack = safeAck(cb);
       const code = socket.data.roomCode;
       const pid = socket.data.playerId;
-      if (!code || !pid) return cb({ ok: false, error: "no_session" });
+      if (!code || !pid) return ack({ ok: false, error: "no_session" });
+      if (!isObject(p) || typeof p.ready !== "boolean") return ack({ ok: false, error: "bad_payload" });
       const room = rooms.get(code);
-      if (!room) return cb({ ok: false, error: "room_not_found" });
-      room.setReady(pid, ready);
-      cb({ ok: true, data: { ready } });
+      if (!room) return ack({ ok: false, error: "room_not_found" });
+      room.setReady(pid, p.ready);
+      ack({ ok: true, data: { ready: p.ready } });
     });
 
     // --- Démarrage (host) ---

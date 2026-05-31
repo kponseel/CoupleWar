@@ -46,7 +46,10 @@ function HostShell({ children }: { children: ReactNode }) {
 function HostLobby({ snapshot }: { snapshot: RoomSnapshot }) {
   const startGame = useStore((s) => s.startGame);
   const couples = snapshot.couples;
-  const canStart = couples.length >= 2 && couples.every((c) => c.players.length === 2);
+  const canStart =
+    couples.length >= snapshot.minCouples &&
+    couples.length <= snapshot.maxCouples &&
+    couples.every((c) => c.players.length === 2);
   const nameOf = (id: string) => snapshot.players.find((p) => p.id === id)?.name ?? "?";
   const unpaired = snapshot.players.filter((p) => !p.coupleId && !p.isHost);
 
@@ -66,7 +69,7 @@ function HostLobby({ snapshot }: { snapshot: RoomSnapshot }) {
           </ol>
         </div>
         <div className="couples-panel">
-          <h2>Couples ({couples.length}/6)</h2>
+          <h2>Couples ({couples.length}/{snapshot.maxCouples})</h2>
           <div className="couples-list">
             {couples.map((c) => (
               <div key={c.id} className="couple-chip">
@@ -90,7 +93,7 @@ function HostLobby({ snapshot }: { snapshot: RoomSnapshot }) {
             <p className="hint">À apparier : {unpaired.map((p) => p.name).join(", ")}</p>
           )}
           <button className="btn btn-primary btn-xl" disabled={!canStart} onClick={() => void startGame()}>
-            {canStart ? "🚀 Lancer la partie" : "En attente de 2 couples complets…"}
+            {canStart ? "🚀 Lancer la partie" : `En attente de ${snapshot.minCouples} couples complets…`}
           </button>
         </div>
       </div>

@@ -68,6 +68,8 @@ export class Room {
     this.data = {
       roomCode,
       configVersion: this.config.configVersion,
+      minCouples: this.config.room.minCouples,
+      maxCouples: this.config.room.maxCouples,
       state: "LOBBY",
       currentRound: 0,
       totalRounds: this.config.roundPlan.length,
@@ -338,7 +340,6 @@ export class Room {
     }
     this.usedQuestionIds.add(question.id);
     if (question.intensity === "deep") this.deepBudget -= 1;
-    this.currentQuestionId = question.id;
 
     const modeRoundIndex = this.modeCounters.get(mode) ?? 0;
     this.modeCounters.set(mode, modeRoundIndex + 1);

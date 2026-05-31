@@ -80,6 +80,8 @@ export function toCoupleView(c: Couple): CoupleView {
 export interface RoomData {
   roomCode: string;
   configVersion: string;
+  minCouples: number;
+  maxCouples: number;
   state: GameState;
   currentRound: number;
   totalRounds: number;
@@ -94,6 +96,8 @@ export function buildSnapshot(room: RoomData): RoomSnapshot {
     roomCode: room.roomCode,
     state: room.state,
     configVersion: room.configVersion,
+    minCouples: room.minCouples,
+    maxCouples: room.maxCouples,
     currentRound: room.currentRound,
     totalRounds: room.totalRounds,
     currentMode: room.currentMode,
