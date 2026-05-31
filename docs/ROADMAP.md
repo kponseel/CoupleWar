@@ -64,14 +64,20 @@ But : que la v1.0 actuelle soit **réellement jouable en soirée** et **déploy�
 
 ## JALON B — v1.1 : enrichir le jeu (après feu vert)
 
+### B0. Mode solo (1 couple + TV) ✅ — ajout dev/test
+- [x] `canStart(solo)` / `startGame(solo)` : 1 couple complet suffit
+- [x] Bouton lobby « 🧪 Lancer en solo » ; modes inter-couples dégradent proprement
+- **Acceptation** : ✅ e2e solo (sync→auction→wavelength→finale→résultats) + test d'intégration.
+
 ### B1. Mode Wavelength (§6) ✅ ⏱️2.5j
 Le plus simple à brancher sur le moteur générique (plugin asymétrique).
-- [ ] Plugin `wavelengthMode` : Émetteur voit la cible, donne 1 mot/emoji ; Récepteur place le curseur ; autres couples parient la direction
-- [ ] Scoring §6.4 (anneaux 4/3/2, paris +1/+2, catch-up dernier)
-- [ ] UI host (spectre + indice) + UI player (Émetteur / Récepteur / Parieur)
-- [ ] Stat `wavelengthAccuracy` alimentée (déjà câblée dans results)
-- [ ] Seed : ~12 questions wavelength (pôles + cibles)
-- **Acceptation** : round Wavelength jouable, scoring testé, intégré au roundPlan.
+- [x] Plugin `wavelengthMode` : Émetteur voit la cible, donne 1 mot ; Récepteur place le curseur ; autres couples parient la direction
+- [x] Scoring §6.4 (anneaux 4/3/2, paris +1/+2)
+- [x] UI host (spectre + indice) + UI player (Émetteur / Récepteur / Parieur)
+- [x] Stat `wavelengthAccuracy` alimentée
+- [x] Seed : 12 questions wavelength (pôles)
+- [ ] Catch-up (tour bonus dernier qui marque 4 pts) — non implémenté
+- **Acceptation** : ✅ round Wavelength jouable, scoring testé (6 tests), e2e dédié, cible jamais fuitée.
 
 ### B2. Mode Mime D3 — Canal d'emojis (§8.3) ⬜ ⏱️2j
 Le plus simple des Mime (pas de caméra/DeviceMotion).
