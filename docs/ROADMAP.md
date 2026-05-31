@@ -79,13 +79,13 @@ Le plus simple à brancher sur le moteur générique (plugin asymétrique).
 - [ ] Catch-up (tour bonus dernier qui marque 4 pts) — non implémenté
 - **Acceptation** : ✅ round Wavelength jouable, scoring testé (6 tests), e2e dédié, cible jamais fuitée.
 
-### B2. Mode Mime D3 — Canal d'emojis (§8.3) ⬜ ⏱️2j
+### B2. Mode Mime D3 — Canal d'emojis (§8.3) ✅ ⏱️2j
 Le plus simple des Mime (pas de caméra/DeviceMotion).
-- [ ] Plugin `mimeEmojiMode` : Donneur envoie 6 emojis espacés (cooldown serveur), Récepteur devine en texte libre, fuzzy match
-- [ ] Chaos bonus : autres couples devinent aussi
-- [ ] Stat `emojiHits` alimentée
-- [ ] Seed : ~10 concepts + pool d'emojis
-- **Acceptation** : round emoji jouable, fuzzy-match testé.
+- [x] Plugin `mimeEmojiMode` : Donneur envoie ses emojis (cooldown serveur), Récepteur devine en texte libre, fuzzy match
+- [x] Chaos bonus : autres couples devinent aussi (+points s'ils trouvent avant le Récepteur)
+- [x] Stat `emojiHits` alimentée
+- [x] Seed : 10 concepts + pool de 120 emojis
+- **Acceptation** : ✅ round emoji jouable, fuzzy-match testé (8 tests), scoring testé (5), e2e dédié, secret jamais fuité.
 
 ### B3. Mécaniques anti-décrochage (§10.3) ⬜ ⏱️1j
 - [ ] Leader du round → handicap secret au suivant ; dernier → bonus secret
