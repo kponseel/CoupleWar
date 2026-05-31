@@ -1,0 +1,56 @@
+[
+  {
+    "id": "q_auc_0001",
+    "mode": "auction",
+    "intensity": "light",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Quelle est l'activité préférée du Cible un dimanche pluvieux ?",
+    "options": ["Marathon de série", "Cuisiner", "Sieste", "Ranger la maison"]
+  },
+  {
+    "id": "q_auc_0002",
+    "mode": "auction",
+    "intensity": "light",
+    "category": "open_tabs",
+    "tags": ["daily"],
+    "text": "Quel achat « inutile mais indispensable » le Cible a fait récemment ?",
+    "options": ["Un gadget de cuisine", "Une plante", "Un vêtement en double", "Un truc vu en pub"]
+  },
+  {
+    "id": "q_auc_0003",
+    "mode": "auction",
+    "intensity": "medium",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "Quelle est la plus grande peur (avouable) du Cible ?",
+    "options": ["Les araignées", "Parler en public", "Le vide", "Manquer de wifi"]
+  },
+  {
+    "id": "q_auc_0004",
+    "mode": "auction",
+    "intensity": "medium",
+    "category": "mythologie",
+    "tags": ["daily"],
+    "text": "Quel talent caché le Cible aimerait avoir ?",
+    "options": ["Chanter juste", "Danser", "Cuisiner comme un chef", "Bricoler"]
+  },
+  {
+    "id": "q_auc_0005",
+    "mode": "auction",
+    "intensity": "medium",
+    "category": "curseur_desir",
+    "tags": ["future"],
+    "text": "Si le Cible gagnait au loto demain, son premier réflexe ?",
+    "options": ["Voyager", "Tout épargner", "Une grosse fête", "Quitter son boulot"]
+  },
+  {
+    "id": "q_auc_0006",
+    "mode": "auction",
+    "intensity": "deep",
+    "category": "curseur_desir",
+    "tags": ["desire"],
+    "text": "Qu'est-ce qui fait se sentir le plus aimé(e) le Cible ?",
+    "options": ["Un compliment", "Un câlin", "Un service rendu", "Du temps ensemble"]
+  }
+]

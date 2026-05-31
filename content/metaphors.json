@@ -1,0 +1,40 @@
+{
+  "tiers": [
+    {
+      "min": 67,
+      "max": 74,
+      "lines": [
+        "Votre couple est un Ikea : il faut un mode d'emploi, mais ça tient debout.",
+        "Votre couple est un wifi public : ça capte, faut juste se rapprocher.",
+        "Votre couple est une raclette de novembre : ça démarre doucement, puis ça réchauffe tout."
+      ]
+    },
+    {
+      "min": 75,
+      "max": 84,
+      "lines": [
+        "Votre couple est un bon café du matin : indispensable et un peu corsé.",
+        "Votre couple est une playlist road-trip : quelques sauts de piste, mais que des tubes.",
+        "Votre couple est une pâte à pizza maison : ça lève bien, l'avenir sent bon."
+      ]
+    },
+    {
+      "min": 85,
+      "max": 92,
+      "lines": [
+        "Votre couple est un soufflé au fromage : techniquement risqué, mais quand ça monte, c'est sublime.",
+        "Votre couple est un duo de jazz : improvisé, parfaitement accordé.",
+        "Votre couple est un feu d'artifice synchronisé : tout le monde regarde, bouche bée."
+      ]
+    },
+    {
+      "min": 93,
+      "max": 100,
+      "lines": [
+        "Votre couple est un théorème prouvé : élégant, irréfutable, étudié dans les écoles.",
+        "Votre couple est une éclipse totale : rare, parfaitement aligné, on en parlera des années.",
+        "Votre couple est un orchestre symphonique : chaque note à sa place, le silence en frissonne."
+      ]
+    }
+  ]
+}

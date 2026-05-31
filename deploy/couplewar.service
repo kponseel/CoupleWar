@@ -1,0 +1,30 @@
+# CoupleWar — service systemd (process Node long-running sur Hostinger VPS).
+# Installation :
+#   sudo cp deploy/couplewar.service /etc/systemd/system/couplewar.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now couplewar
+#   sudo systemctl status couplewar
+#   journalctl -u couplewar -f          # logs en direct
+
+[Unit]
+Description=CoupleWar realtime server (Node + Socket.io)
+After=network.target
+
+[Service]
+Type=simple
+User=couplewar
+WorkingDirectory=/var/www/couplewar
+ExecStart=/usr/bin/node server/dist/index.js
+Restart=always
+RestartSec=3
+Environment=NODE_ENV=production
+Environment=PORT=3001
+Environment=HOST=127.0.0.1
+Environment=SERVE_STATIC=true
+# Origines autorisées (same-origin en prod ; le front est servi par Nginx).
+Environment=CORS_ORIGINS=https://couplewar.estim.pro
+# Surcharge éventuelle du chemin de config :
+# Environment=COUPLEWAR_CONFIG_PATH=/var/www/couplewar/config/game.config.json
+
+[Install]
+WantedBy=multi-user.target
