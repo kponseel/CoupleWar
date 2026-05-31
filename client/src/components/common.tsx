@@ -46,6 +46,10 @@ function humanError(code: string): string {
     too_late: "Trop tard pour cette réponse !",
     cible_cannot_bet: "La Cible ne mise pas ce round.",
     not_host: "Seul l'hôte peut lancer la partie.",
+    not_your_couple: "Action non autorisée sur ce couple.",
+    connection_lost: "Connexion perdue. Vérifie ton réseau.",
+    timeout: "Le serveur n'a pas répondu. Réessaie.",
+    bad_payload: "Données invalides.",
   };
   return map[code] ?? code;
 }

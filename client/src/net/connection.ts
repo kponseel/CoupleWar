@@ -32,6 +32,8 @@ export function initConnection(): void {
   });
 
   socket.io.on("reconnect_attempt", () => set({ connected: false }));
+  // Échec définitif de reconnexion : on le signale clairement à l'utilisateur.
+  socket.io.on("reconnect_failed", () => set({ connected: false, error: "connection_lost" }));
 
   socket.on("room:state", (snapshot) => {
     const prev = useStore.getState().snapshot;
@@ -42,8 +44,10 @@ export function initConnection(): void {
       patch.results = null;
       patch.intro = null;
     }
-    if (prev?.state !== snapshot.state && snapshot.state === "RESULTS") {
-      sfx.success();
+    if (prev?.state !== snapshot.state) {
+      // Changement de phase : on purge les FX en attente (anti FX fantôme).
+      cancelPendingFx();
+      if (snapshot.state === "RESULTS") sfx.success();
     }
     set(patch);
   });
@@ -87,10 +91,24 @@ export function initConnection(): void {
   socket.on("error", (p) => set({ error: p.message || p.code }));
 
   // FX synchronisés multi-écrans (§10.2) : déclenchés au `executeAt` local.
+  // On borne le délai (offset d'horloge aberrant → FX ne doit pas partir dans
+  // un futur lointain) et on tracke le timer pour pouvoir l'annuler.
   socket.on("fx", (fx) => {
-    const delay = Math.max(0, delayUntil(fx.executeAt));
-    window.setTimeout(() => runFx(fx), delay);
+    const delay = Math.min(10_000, Math.max(0, delayUntil(fx.executeAt)));
+    const t = window.setTimeout(() => {
+      fxTimers.delete(t);
+      runFx(fx);
+    }, delay);
+    fxTimers.add(t);
   });
+}
+
+/** Timers de FX en attente, annulés à un changement d'état de room (anti FX fantôme). */
+const fxTimers = new Set<number>();
+
+function cancelPendingFx(): void {
+  for (const t of fxTimers) window.clearTimeout(t);
+  fxTimers.clear();
 }
 
 /** Recalibre l'horloge puis tente de reprendre la session (§3.2 / §14). */
