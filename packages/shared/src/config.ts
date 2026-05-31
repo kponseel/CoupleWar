@@ -87,6 +87,12 @@ export const gameConfigSchema = z.object({
   finale: z.object({
     scoreMultiplier: z.number().positive(),
   }),
+  catchUp: z.object({
+    enabled: z.boolean(),
+    leaderPenalty: z.number().positive(),
+    lastBonus: z.number().positive(),
+    minCouples: z.number().int().positive(),
+  }),
   clock: z.object({
     samples: z.number().int().positive(),
     sampleIntervalMs: z.number().positive(),

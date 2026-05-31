@@ -102,5 +102,11 @@
   "introMs": 300,
   "revealHoldMs": 600,
   "interludeMs": 600,
-  "leaderboardRowPauseMs": 100
+  "leaderboardRowPauseMs": 100,
+  "catchUp": {
+    "enabled": false,
+    "leaderPenalty": 0.8,
+    "lastBonus": 1.3,
+    "minCouples": 3
+  }
 }

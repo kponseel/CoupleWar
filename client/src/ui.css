@@ -372,3 +372,15 @@ input,
 }
 .emoji-stream.big { font-size: 3rem; }
 .emoji-stream.host { font-size: clamp(3rem, 10vw, 6rem); gap: 16px; }
+
+/* Anti-décrochage (§10.3) : bandeau de handicap/bonus secret côté joueur. */
+.catchup-tag {
+  margin-top: 14px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  max-width: 420px;
+}
+.catchup-tag.handicap { background: rgba(9, 132, 227, 0.18); border: 1px solid var(--opt3); color: #9ecbff; }
+.catchup-tag.bonus { background: rgba(224, 36, 94, 0.18); border: 1px solid var(--accent); color: var(--accent2); }

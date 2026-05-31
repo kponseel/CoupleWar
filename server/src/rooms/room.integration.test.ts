@@ -368,6 +368,69 @@ test("Room : partie complète atteint RESULTS avec 2 résultats valides", async 
   room.dispose();
 });
 
+test("Room : anti-décrochage — handicap au leader, bonus au dernier (§10.3)", async () => {
+  // 3 couples (min pour catch-up), 2 rounds sync (le 1er crée un écart, le 2e
+  // applique le handicap/bonus). On force des scores via réponses synchrones.
+  const cfg: GameConfig = {
+    ...fastConfig,
+    catchUp: { enabled: true, leaderPenalty: 0.5, lastBonus: 2, minCouples: 3 },
+    roundPlan: [
+      { mode: "sync", intensityMax: "light" },
+      { mode: "sync", intensityMax: "light" },
+    ],
+  };
+  const { io, events } = makeFakeIo();
+  const room = new Room("CATCH", { io, config: cfg, questionBank: bank });
+  // host + 6 joueurs = 3 couples.
+  const ps = ["sH", "s1", "s2", "s3", "s4", "s5", "s6"].map((s, i) => room.addPlayer(s, `P${i}`, i === 0));
+  for (const [a, b] of [[1, 2], [3, 4], [5, 6]] as const) {
+    const c = room.createCouple(ps[a].id) as { coupleId: string; joinCode: string };
+    room.joinCouple(ps[b].id, c.joinCode);
+  }
+
+  // Round 1 : couple A répond instantanément (haut score), C ne répond pas (0).
+  room.startGame();
+  await sleep(40);
+  const allPlayers = [ps[1], ps[2], ps[3], ps[4], ps[5], ps[6]];
+  const play1 = (room as unknown as { controller: { resync(): { questionId: string; options: string[] } } }).controller.resync();
+  // A: les deux répondent pareil (match, vite) ; B: pareil mais on s'en fiche ; C: rien.
+  room.submitAnswer(ps[1].id, { questionId: play1.questionId, answer: play1.options[0], clientSubmitTime: Date.now() });
+  room.submitAnswer(ps[2].id, { questionId: play1.questionId, answer: play1.options[0], clientSubmitTime: Date.now() });
+  // B répond divergent → score plus bas que A.
+  room.submitAnswer(ps[3].id, { questionId: play1.questionId, answer: play1.options[0], clientSubmitTime: Date.now() });
+  room.submitAnswer(ps[4].id, { questionId: play1.questionId, answer: play1.options[1], clientSubmitTime: Date.now() });
+  // C ne répond pas → 0 pt → dernier.
+  // On attend le round 2 (ROUND_PLAY) : reveal du R1 → interlude (prepareCatchUp) → R2.
+  for (let i = 0; i < 100 && !(room.data.state === "ROUND_PLAY" && room.data.currentRound === 2); i++) {
+    await sleep(20);
+  }
+  assert.equal(room.data.currentRound, 2, "doit être au round 2");
+
+  // Classement figé après le round 1 ; les libellés de handicap sont posés.
+  const standings = [...room.data.couples.values()].sort((a, b) => b.totalScore - a.totalScore);
+  const leader = standings[0];
+  const last = standings[standings.length - 1];
+  assert.equal(leader.handicap, "handicap_secret");
+  assert.equal(last.handicap, "bonus_secret");
+
+  // Round 2 : tout le monde marque pareil ; vérifie que le delta du leader est
+  // réduit (×0.5) et celui du dernier amplifié (×2) vs un couple neutre.
+  const before = new Map([...room.data.couples.values()].map((c) => [c.id, c.totalScore]));
+  const play2 = (room as unknown as { controller: { resync(): { questionId: string; options: string[] } } }).controller.resync();
+  for (const p of allPlayers) {
+    room.submitAnswer(p.id, { questionId: play2.questionId, answer: play2.options[0], clientSubmitTime: Date.now() });
+  }
+  await sleep(80); // reveal applique le catch-up
+
+  const deltaLeader = leader.totalScore - (before.get(leader.id) ?? 0);
+  const deltaLast = last.totalScore - (before.get(last.id) ?? 0);
+  const mid = standings[1];
+  const deltaMid = mid.totalScore - (before.get(mid.id) ?? 0);
+  assert.ok(deltaLeader < deltaMid, "le leader gagne MOINS que le couple neutre (handicap)");
+  assert.ok(deltaLast > deltaMid, "le dernier gagne PLUS que le couple neutre (bonus)");
+  room.dispose();
+});
+
 test("Room : reconnexion en plein round renvoie le payload courant (resync §14)", async () => {
   const { room, events, players } = setupRoom();
   room.startGame();

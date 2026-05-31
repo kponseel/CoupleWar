@@ -99,6 +99,16 @@
     "scoreMultiplier": 2.5
   },
 
+  // Anti-décrochage « Mario Kart » (§10.3). Au round suivant : le couple en tête
+  // subit un handicap (score du round ×leaderPenalty), le dernier reçoit un coup
+  // de pouce (×lastBonus). Désactivable : enabled=false. Pas appliqué en FINALE.
+  "catchUp": {
+    "enabled": true,
+    "leaderPenalty": 0.8,
+    "lastBonus": 1.3,
+    "minCouples": 3
+  },
+
   // Synchro d'horloge (§3.2). Paramètres du mini-NTP côté client.
   "clock": {
     "samples": 5,               // nb de pings (médiane des offsets)

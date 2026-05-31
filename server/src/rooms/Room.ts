@@ -13,6 +13,7 @@ import { QuestionBank } from "../content/questions.js";
 import { generateCoupleNames, sanitizeCoupleName } from "../content/coupleNames.js";
 import { getResultsContent } from "../content/results.js";
 import { computeResults } from "../scoring/results.js";
+import { computeCatchUp } from "../scoring/catchUp.js";
 import {
   buildSnapshot,
   emptyStats,
@@ -58,6 +59,8 @@ export class Room {
   private roundCompleted = false;
   private timers = new Set<NodeJS.Timeout>();
   private disconnectTimers = new Map<string, NodeJS.Timeout>();
+  // Multiplicateurs anti-décrochage (§10.3) à appliquer au round courant, par coupleId.
+  private catchUpMultipliers = new Map<string, number>();
 
   // Derniers événements transitoires, pour re-synchroniser une reconnexion (§14).
   private lastIntro: Parameters<ServerToClient["round:intro"]>[0] | null = null;
@@ -320,6 +323,7 @@ export class Room {
     this.deepBudget = this.config.tone.maxDeepQuestionsPerGame;
     this.usedQuestionIds.clear();
     this.modeCounters.clear();
+    this.catchUpMultipliers.clear();
     this.data.currentRound = 0;
     this.nextRound();
     return { ok: true };
@@ -422,7 +426,21 @@ export class Room {
     this.data.state = "ROUND_REVEAL";
     const lead = this.config.reveal.drumrollMs + this.config.reveal.freezeMs + 200;
     const executeAt = clock.now() + lead;
+
+    // Anti-décrochage (§10.3) : on capture les scores AVANT le scoring du round,
+    // puis on applique le multiplicateur secret au delta gagné ce round.
+    const preScores = new Map([...this.data.couples.values()].map((c) => [c.id, c.totalScore]));
     const { reveal, fx } = this.controller.finishAndReveal(executeAt);
+    if (this.catchUpMultipliers.size > 0) {
+      for (const couple of this.data.couples.values()) {
+        const mult = this.catchUpMultipliers.get(couple.id) ?? 1;
+        if (mult === 1) continue;
+        const before = preScores.get(couple.id) ?? couple.totalScore;
+        const delta = couple.totalScore - before;
+        if (delta > 0) couple.totalScore = Math.round(before + delta * mult);
+      }
+      this.catchUpMultipliers.clear();
+    }
     this.lastReveal = reveal;
 
     this.emit("round:reveal", reveal);
@@ -442,8 +460,32 @@ export class Room {
     const topReserved = this.data.currentRound < this.data.totalRounds; // top3 réservé à la FINALE (§10.3)
     this.lastLeaderboard = { entries, rowPauseMs: this.config.leaderboardRowPauseMs, topReserved };
     this.emit("leaderboard:update", this.lastLeaderboard);
+    this.prepareCatchUp();
     this.broadcastSnapshot();
     this.setTimer(() => this.nextRound(), this.config.interludeMs);
+  }
+
+  /**
+   * Anti-décrochage (§10.3) : prépare le handicap/bonus secret du PROCHAIN round
+   * d'après le classement courant. Sauté si le prochain round est la FINALE
+   * (qui a déjà son inflation ×2.5). Le libellé `handicap` est posé sur chaque
+   * couple pour l'afficher (« handicap secret » / « bonus secret »).
+   */
+  private prepareCatchUp(): void {
+    this.catchUpMultipliers.clear();
+    for (const c of this.data.couples.values()) c.handicap = null;
+
+    const nextPlan = this.roundPlan[this.data.currentRound]; // 0-based index = round suivant
+    if (!nextPlan || nextPlan.finale === true) return;
+
+    const standings = [...this.data.couples.values()].map((c) => ({ coupleId: c.id, totalScore: c.totalScore }));
+    const assignments = computeCatchUp(standings, this.config.catchUp);
+    for (const a of assignments) {
+      if (a.kind === null) continue;
+      this.catchUpMultipliers.set(a.coupleId, a.multiplier);
+      const couple = this.data.couples.get(a.coupleId);
+      if (couple) couple.handicap = a.kind === "handicap" ? "handicap_secret" : "bonus_secret";
+    }
   }
 
   private buildLeaderboard(): LeaderboardEntry[] {

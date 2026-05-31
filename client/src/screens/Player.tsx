@@ -165,11 +165,18 @@ function PairingView() {
 
 function IntroMirror() {
   const intro = useStore((s) => s.intro);
+  const myCouple = useMyCouple();
   if (!intro) return <CenterMsg title="…" />;
   return (
     <div className="player-screen center">
       <div className="intro-badge">{intro.isFinale ? "🏁 FINALE" : modeName(intro.mode)}</div>
       <p className="intro-rule">{intro.rule}</p>
+      {myCouple?.handicap === "handicap_secret" && (
+        <div className="catchup-tag handicap">🧊 Handicap secret : à vous de jouer serré ce round…</div>
+      )}
+      {myCouple?.handicap === "bonus_secret" && (
+        <div className="catchup-tag bonus">🔥 Bonus secret : ce round compte double pour remonter !</div>
+      )}
     </div>
   );
 }
