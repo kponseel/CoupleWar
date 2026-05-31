@@ -1,0 +1,23 @@
+{
+  "titles": {
+    "cosmic_twins":   { "emoji": "🪞", "label": "Jumeaux Cosmiques",     "blurb": "Vous pensez avec un seul cerveau (et c'est flippant)." },
+    "daily_telepaths":{ "emoji": "📡", "label": "Télépathes du Quotidien","blurb": "Un emoji vous suffit. Les mots sont pour les amateurs." },
+    "chief_profiler": { "emoji": "🧠", "label": "Profileur en Chef",      "blurb": "Vous ne pensez pas pareil, mais vous lisez l'autre comme un livre." },
+    "living_room_spicy": { "emoji": "🌶️", "label": "Piquants du Salon",   "blurb": "Ambiance chaude sur le canapé. On n'en dira pas plus." },
+    "magnetic_opposites": { "emoji": "🌪️", "label": "Opposés Magnétiques","blurb": "Jamais d'accord, toujours ensemble. La physique vous adore." },
+    "synced_hearts":  { "emoji": "🎯", "label": "Cœurs Synchros",         "blurb": "Même cible, pas le même tempo. Mais quel cœur !" },
+    "confident_costars": { "emoji": "🎭", "label": "Co-Stars Confiants",  "blurb": "Le duo qui joue la grande scène avec aplomb." },
+    "roommate_couple":{ "emoji": "🥖", "label": "Couple-Coloc",           "blurb": "Imbattables sur le quotidien, le futur attendra." },
+    "pacific_roommates": { "emoji": "🛋️", "label": "Coloc' du Pacifique", "blurb": "Zéro stress, zéro pression. Le calme avant le calme." },
+    "aperitif_veterans": { "emoji": "🍷", "label": "Vétérans de l'Apéro", "blurb": "La star de la soirée, c'est vous. Santé !" },
+    "work_in_progress": { "emoji": "🚧", "label": "Travaux en Cours",     "blurb": "Le plus beau reste à construire — et c'est ça qui est bon." },
+    "schrodinger":    { "emoji": "☄️", "label": "Couple Schrödinger",     "blurb": "Imprévisibles, indéfinissables, parfaitement vous." }
+  },
+  "medals": {
+    "wavelength":  { "emoji": "🏆", "label": "Champions du Wavelength" },
+    "latency":     { "emoji": "⚡", "label": "Sprinters du Sync" },
+    "prediction":  { "emoji": "🃏", "label": "Bluffeurs de l'Année" },
+    "social":      { "emoji": "🎨", "label": "Doodlers Romantiques" },
+    "sync":        { "emoji": "💗", "label": "Cœurs Synchrones" }
+  }
+}

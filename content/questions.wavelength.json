@@ -1,0 +1,110 @@
+[
+  {
+    "id": "q_wave_0001",
+    "mode": "wavelength",
+    "intensity": "light",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Place le curseur sur l'échelle",
+    "wavelength": { "poleLeft": "🥗 obsession healthy", "poleRight": "🍔 raclette quotidienne" }
+  },
+  {
+    "id": "q_wave_0002",
+    "mode": "wavelength",
+    "intensity": "light",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "Place le curseur sur l'échelle",
+    "wavelength": { "poleLeft": "😴 marmotte", "poleRight": "⚡ pile électrique" }
+  },
+  {
+    "id": "q_wave_0003",
+    "mode": "wavelength",
+    "intensity": "light",
+    "category": "mythologie",
+    "tags": ["daily"],
+    "text": "Place le curseur sur l'échelle",
+    "wavelength": { "poleLeft": "🧊 toujours en retard", "poleRight": "⏰ toujours en avance" }
+  },
+  {
+    "id": "q_wave_0004",
+    "mode": "wavelength",
+    "intensity": "medium",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Place le curseur sur l'échelle",
+    "wavelength": { "poleLeft": "📋 maniaque du rangement", "poleRight": "🌪️ chaos organisé" }
+  },
+  {
+    "id": "q_wave_0005",
+    "mode": "wavelength",
+    "intensity": "medium",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "Place le curseur sur l'échelle",
+    "wavelength": { "poleLeft": "💸 radin assumé", "poleRight": "🤑 dépensier joyeux" }
+  },
+  {
+    "id": "q_wave_0006",
+    "mode": "wavelength",
+    "intensity": "light",
+    "category": "mythologie",
+    "tags": ["daily"],
+    "text": "Place le curseur sur l'échelle",
+    "wavelength": { "poleLeft": "🐱 team chat", "poleRight": "🐶 team chien" }
+  },
+  {
+    "id": "q_wave_0007",
+    "mode": "wavelength",
+    "intensity": "medium",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Place le curseur sur l'échelle",
+    "wavelength": { "poleLeft": "🏠 casanier", "poleRight": "✈️ globe-trotter" }
+  },
+  {
+    "id": "q_wave_0008",
+    "mode": "wavelength",
+    "intensity": "light",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "Place le curseur sur l'échelle",
+    "wavelength": { "poleLeft": "🌶️ love le piquant", "poleRight": "🍚 nature, sans sel" }
+  },
+  {
+    "id": "q_wave_0009",
+    "mode": "wavelength",
+    "intensity": "medium",
+    "category": "mythologie",
+    "tags": ["daily"],
+    "text": "Place le curseur sur l'échelle",
+    "wavelength": { "poleLeft": "📵 déteste son téléphone", "poleRight": "📱 accro aux écrans" }
+  },
+  {
+    "id": "q_wave_0010",
+    "mode": "wavelength",
+    "intensity": "light",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Place le curseur sur l'échelle",
+    "wavelength": { "poleLeft": "🎬 film d'auteur", "poleRight": "💥 blockbuster pop-corn" }
+  },
+  {
+    "id": "q_wave_0011",
+    "mode": "wavelength",
+    "intensity": "medium",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "Place le curseur sur l'échelle",
+    "wavelength": { "poleLeft": "🤫 grand timide", "poleRight": "🎤 star de la soirée" }
+  },
+  {
+    "id": "q_wave_0012",
+    "mode": "wavelength",
+    "intensity": "light",
+    "category": "mythologie",
+    "tags": ["daily"],
+    "text": "Place le curseur sur l'échelle",
+    "wavelength": { "poleLeft": "🌅 lève-tôt", "poleRight": "🌙 couche-tard" }
+  }
+]

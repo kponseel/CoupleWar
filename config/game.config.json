@@ -1,0 +1,142 @@
+{
+  // ============================================================================
+  // CoupleWar — Configuration centralisée (source de vérité §11 de la spec).
+  // Fichier JSONC : les commentaires // et /* */ sont autorisés (strippés au
+  // chargement par le serveur, cf packages/shared/src/jsonc.ts).
+  // AUCUNE valeur chiffrée ne doit être codée en dur ailleurs : tout vient d'ici.
+  // Versionné : toute modif de règle passe par ce fichier (voir configVersion).
+  // ============================================================================
+  "configVersion": "1.0.0",
+
+  // Contraintes de room (§4.1). codeLength = nb de lettres du code de partie.
+  "room": {
+    "minCouples": 2,
+    "maxCouples": 6,
+    "codeLength": 4
+  },
+
+  // Mode A — Sync (§5.3). deadlineMs = fenêtre de réponse ; base ∈ [baseMin,baseMax].
+  "sync": {
+    "deadlineMs": 15000,
+    "baseMin": 500,
+    "baseMax": 1000,
+    "matchMultiplier": 2.5,     // bonus si réponses identiques
+    "heartbeatGapMs": 500,      // seuil "Cœur Battant" (latencyGap <)
+    "heartbeatBonus": 500,
+    "streakThreshold": 3,       // 3 matchs Sync consécutifs → badge "En Symbiose"
+    "streakMultiplier": 1.5,    // appliqué au PROCHAIN round Sync
+    "lateToleranceMs": 200      // tolérance avant rejet "too_late"
+  },
+
+  // Mode B — Wavelength (§6). BRANCHÉ et jouable. bullseye/mid/outerRadius =
+  // demi-largeurs des anneaux (0..100) ; clueMaxChars = longueur max de l'indice.
+  "wavelength": {
+    "clueTimeMs": 5000,
+    "receiveTimeMs": 10000,
+    "bullseyePts": 4,
+    "midPts": 3,
+    "outerPts": 2,
+    "betCorrectPts": 1,
+    "betBullseyePts": 2,
+    "emojiGridSize": 60,
+    "bullseyeRadius": 5,
+    "midRadius": 12,
+    "outerRadius": 22,
+    "clueMaxChars": 20
+  },
+
+  // Mode C — Enchères (§7.3). 1 jeton = tokenToPoints ; gain x winMultiplier.
+  "auction": {
+    "answerTimeMs": 20000,
+    "betTimeMs": 15000,
+    "tokensPerRound": 10,
+    "minBet": 1,
+    "maxBet": 5,
+    "winMultiplier": 3,
+    "tokenToPoints": 100,
+    "perfectGuessBonus": 1000,  // Devineur mise 5 jetons (max) sur la bonne option
+    "freeTextMaxChars": 25
+  },
+
+  // Mode D — Mime (§8). D3 (canal d'emojis) BRANCHÉ ; D1/D2 prévus v1.2.
+  "mime": {
+    "doodleTimeMs": 30000,
+    "headsupTimeMs": 30000,
+    "headsupCluesMax": 5,
+    "emojiCooldownMs": 4000,
+    "emojiPoolSize": 120,
+    "emojiHandSize": 6,
+    "matchPts": 1500,
+    "socialVoteBonus": 500,
+    "headsupPerWordPts": 300,
+    "otherCoupleGuessPts": 300,
+    "cameraClipSec": 5,
+    "emojiRoundTimeMs": 30000,
+    "guessMaxChars": 40
+  },
+
+  // Écran RESULTS (§9.4). compatFloor = plancher % de compatibilité (jamais <).
+  "results": {
+    "compatFloor": 67,
+    "weights": { "sync": 0.35, "prediction": 0.25, "wavelength": 0.20, "divergence": 0.20 }
+  },
+
+  // Tonalité (§2, règle 5:1). Quota strict de questions "deep" par partie.
+  "tone": {
+    "maxDeepQuestionsPerGame": 2,
+    "funToVulnerableRatio": "5:1"
+  },
+
+  // Moments "wow" synchronisés (§10.2). Durées exactes des FX.
+  "reveal": {
+    "drumrollMs": 1500,
+    "freezeMs": 100,
+    "flashMs": 200
+  },
+
+  // FINALE (§2/§10.3). Multiplicateur appliqué au dernier round.
+  "finale": {
+    "scoreMultiplier": 2.5
+  },
+
+  // Anti-décrochage « Mario Kart » (§10.3). Au round suivant : le couple en tête
+  // subit un handicap (score du round ×leaderPenalty), le dernier reçoit un coup
+  // de pouce (×lastBonus). Désactivable : enabled=false. Pas appliqué en FINALE.
+  "catchUp": {
+    "enabled": true,
+    "leaderPenalty": 0.8,
+    "lastBonus": 1.3,
+    "minCouples": 3
+  },
+
+  // Synchro d'horloge (§3.2). Paramètres du mini-NTP côté client.
+  "clock": {
+    "samples": 5,               // nb de pings (médiane des offsets)
+    "sampleIntervalMs": 150
+  },
+
+  // Réseau / robustesse (§14). Fenêtre de reconnexion d'un joueur déconnecté.
+  "network": {
+    "reconnectGraceMs": 30000
+  },
+
+  // Séquence de rounds (modes branchés : sync, auction, wavelength, mime_d3).
+  // Étend cette liste quand de nouveaux modes arrivent. Le dernier round = FINALE.
+  "roundPlan": [
+    { "mode": "sync",       "intensityMax": "light" },
+    { "mode": "auction",    "intensityMax": "medium" },
+    { "mode": "wavelength", "intensityMax": "light" },
+    { "mode": "mime_d3",    "intensityMax": "light" },
+    { "mode": "auction",    "intensityMax": "medium" },
+    { "mode": "sync",       "intensityMax": "medium", "finale": true }
+  ],
+
+  // Durée de l'écran ROUND_INTRO (annonce du mode), §5.2.
+  "introMs": 3000,
+  // Durée d'affichage du ROUND_REVEAL avant de passer à l'INTERLUDE.
+  "revealHoldMs": 4000,
+  // Durée d'affichage du leaderboard en INTERLUDE avant le round suivant (§10.3).
+  "interludeMs": 6000,
+  // Pause par ligne lors du reveal bottom-up du leaderboard (§10.3).
+  "leaderboardRowPauseMs": 500
+}

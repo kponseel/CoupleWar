@@ -1,0 +1,23 @@
+{
+  "article": "Les",
+  "nouns": [
+    "Raclettes", "Pizzas", "Boomers", "Catastrophes", "Télépathes", "Loutres",
+    "Pingouins", "Ratons", "Tigres", "Avocats", "Croissants", "Tornades",
+    "Komodos", "Sirènes", "Cactus", "Météores", "Pandas", "Fennecs",
+    "Otaries", "Gaufres", "Mojitos", "Caribous", "Suricates", "Lamas",
+    "Hérissons", "Flamants", "Dauphins", "Koalas", "Renards", "Marmottes",
+    "Crêpes", "Tacos", "Burritos", "Licornes", "Dragons", "Phénix",
+    "Comètes", "Volcans", "Aimants", "Boussoles"
+  ],
+  "adjectives": [
+    "Magnétiques", "Fusionnels", "Caféinés", "Premium", "Cosmiques",
+    "Indomptables", "Survoltés", "Synchronisés", "Atomiques", "Légendaires",
+    "Électriques", "Turbo", "Nucléaires", "Sauvages", "Givrés",
+    "Incandescents", "Mystiques", "Suprêmes", "Galactiques", "Endiablés",
+    "Hypnotiques", "Tropicaux", "Stellaires", "Insubmersibles", "Pétillants",
+    "Radioactifs", "Volcaniques", "Magiques", "Phosphorescents", "Inflammables",
+    "Increvables", "Déchaînés", "Vibrants", "Surnaturels", "Explosifs",
+    "Téméraires", "Intrépides", "Charismatiques", "Ensorcelés", "Suprasoniques"
+  ],
+  "blocklist": ["con", "nul", "merde", "salaud", "putain"]
+}

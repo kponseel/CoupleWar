@@ -1,0 +1,31 @@
+{
+  "name": "couplewar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CoupleWar — PWA party game multi-écrans, couple vs couple, temps réel.",
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "build:shared": "npm run build -w @couplewar/shared",
+    "build": "npm run build:shared && npm run build -w server && npm run build -w client",
+    "dev": "npm run build:shared && concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm run dev -w server",
+    "dev:client": "npm run dev -w client",
+    "start": "node server/dist/index.js",
+    "guide": "node scripts/generate-guide.mjs",
+    "test": "npm run build:shared && npm run test -w @couplewar/shared && npm run test -w server",
+    "typecheck": "npm run build:shared && npm run typecheck -w server && npm run typecheck -w client"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "pdfkit": "^0.15.2",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
