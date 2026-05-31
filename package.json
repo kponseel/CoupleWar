@@ -12,6 +12,7 @@
   "scripts": {
     "build:shared": "npm run build -w @couplewar/shared",
     "build": "npm run build:shared && npm run build -w server && npm run build -w client",
+    "postinstall": "node scripts/postinstall.mjs",
     "dev": "npm run build:shared && concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
     "dev:server": "npm run dev -w server",
     "dev:client": "npm run dev -w client",
