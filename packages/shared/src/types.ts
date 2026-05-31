@@ -80,6 +80,8 @@ export interface RoomSnapshot {
   totalRounds: number;
   currentMode: GameMode | null;
   isFinale: boolean;
+  /** Partie lancée en mode solo (1 couple, dev/test). */
+  solo: boolean;
   players: PlayerView[];
   couples: CoupleView[];
 }

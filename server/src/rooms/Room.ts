@@ -77,6 +77,7 @@ export class Room {
       totalRounds: this.config.roundPlan.length,
       currentMode: null,
       isFinale: false,
+      solo: false,
       players: new Map(),
       couples: new Map(),
     };
@@ -291,9 +292,15 @@ export class Room {
   // -------------------------------------------------------------------------
   // Démarrage de partie + state machine
   // -------------------------------------------------------------------------
-  canStart(): { ok: true } | { ok: false; reason: string } {
+  /**
+   * @param solo Mode solo/practice (§dev) : autorise le démarrage avec 1 seul
+   * couple (au lieu de minCouples). Les modes inter-couples dégradent proprement
+   * (Enchères = le Devineur parie ; Wavelength = pas de parieurs).
+   */
+  canStart(solo = false): { ok: true } | { ok: false; reason: string } {
     const couples = [...this.data.couples.values()];
-    if (couples.length < this.config.room.minCouples) return { ok: false, reason: "not_enough_couples" };
+    const min = solo ? 1 : this.config.room.minCouples;
+    if (couples.length < min) return { ok: false, reason: solo ? "need_one_couple" : "not_enough_couples" };
     if (couples.length > this.config.room.maxCouples) return { ok: false, reason: "too_many_couples" };
     if (couples.some((c) => c.playerIds.length !== 2)) return { ok: false, reason: "incomplete_couple" };
     // tous les modes du plan doivent être branchés
@@ -303,9 +310,10 @@ export class Room {
     return { ok: true };
   }
 
-  startGame(): { ok: boolean; reason?: string } {
-    const check = this.canStart();
+  startGame(solo = false): { ok: boolean; reason?: string } {
+    const check = this.canStart(solo);
     if (!check.ok) return { ok: false, reason: check.reason };
+    this.data.solo = solo;
     this.roundPlan = this.config.roundPlan;
     this.deepBudget = this.config.tone.maxDeepQuestionsPerGame;
     this.usedQuestionIds.clear();

@@ -85,7 +85,84 @@ test("Room : canStart exige 2 couples complets", () => {
   const p2 = room.addPlayer("s2", "P2", false);
   room.joinCouple(p2.id, c.joinCode);
   assert.equal(room.canStart().ok, false); // 1 couple complet < minCouples
+  // En mode solo, 1 couple complet suffit.
+  assert.equal(room.canStart(true).ok, true);
 });
+
+/** Room avec UN seul couple complet (mode solo dev/test). */
+function setupSolo() {
+  const { io, events } = makeFakeIo();
+  const room = new Room("SOLO", { io, config: fastConfig, questionBank: bank });
+  const h = room.addPlayer("s_host", "Host", true);
+  const a1 = room.addPlayer("s_a1", "Alex", false);
+  const a2 = room.addPlayer("s_a2", "Sam", false);
+  const cA = room.createCouple(a1.id) as { coupleId: string; joinCode: string };
+  room.joinCouple(a2.id, cA.joinCode);
+  return { room, events, players: { h, a1, a2 } };
+}
+
+test("Room : mode solo (1 couple) traverse tous les modes jusqu'à RESULTS sans crash", async () => {
+  const { room, events, players } = setupSolo();
+  const started = room.startGame(true);
+  assert.equal(started.ok, true);
+  assert.equal(room.data.solo, true);
+
+  const handled = new Set<string>();
+  for (let i = 0; i < 300 && room.data.state !== "RESULTS"; i++) {
+    const play = lastEvent(events, "round:play");
+    if (play) {
+      const p = play.args[0] as Record<string, unknown>;
+      const key = `${p.mode}:${p.phase ?? ""}:${p.questionId}`;
+      if (!handled.has(key)) {
+        handled.add(key);
+        driveSolo(room, players, p);
+      }
+    }
+    await sleep(20);
+  }
+
+  assert.equal(room.data.state, "RESULTS");
+  const finalEvt = lastEvent(events, "results:final");
+  assert.ok(finalEvt, "results:final doit être émis en solo");
+  const results = (finalEvt!.args[0] as { results: unknown[] }).results;
+  assert.equal(results.length, 1); // un seul couple
+  const r = results[0] as { compatibility: number; title: { label: string }; medal: unknown };
+  assert.ok(r.compatibility >= fastConfig.results.compatFloor);
+  assert.ok(r.title.label.length > 0);
+  room.dispose();
+});
+
+/** Pilote le couple unique en solo (émetteur/récepteur, pas de parieurs adverses). */
+function driveSolo(
+  room: Room,
+  players: { a1: { id: string }; a2: { id: string }; h: { id: string } },
+  p: Record<string, unknown>,
+) {
+  const now = Date.now();
+  if (p.mode === "sync") {
+    const opt = (p.options as string[])[0];
+    room.submitAnswer(players.a1.id, { questionId: p.questionId as string, answer: opt, clientSubmitTime: now });
+    room.submitAnswer(players.a2.id, { questionId: p.questionId as string, answer: opt, clientSubmitTime: now });
+  } else if (p.mode === "auction" && p.phase === "answer") {
+    room.submitAnswer(p.targetPlayerId as string, {
+      questionId: p.questionId as string,
+      answer: (p.options as string[])[0],
+      clientSubmitTime: now,
+    });
+  } else if (p.mode === "auction" && p.phase === "bet") {
+    // Le Devineur du couple cible mise (seul participant en solo).
+    const devineur = [players.a1.id, players.a2.id].find((id) => id !== p.targetPlayerId) ?? players.a1.id;
+    room.submitBet(devineur, { questionId: p.questionId as string, option: (p.options as string[])[0], tokens: p.minBet as number });
+  } else if (p.mode === "wavelength" && p.phase === "clue") {
+    room.submitAnswer(p.emitterPlayerId as string, {
+      questionId: p.questionId as string,
+      answer: "indice",
+      clientSubmitTime: now,
+    });
+  } else if (p.mode === "wavelength" && p.phase === "reception") {
+    room.submitAnswer(p.receiverPlayerId as string, { questionId: p.questionId as string, answer: "50", clientSubmitTime: now });
+  }
+}
 
 test("Room : refuse une question deux fois / hors timing (autorité)", async () => {
   const { room, players } = setupRoom();

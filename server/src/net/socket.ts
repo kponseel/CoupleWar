@@ -159,7 +159,7 @@ export function registerSocketHandlers(io: Server, rooms: RoomManager): void {
     });
 
     // --- Démarrage (host) ---
-    socket.on("game:start", (cb) => {
+    socket.on("game:start", (p, cb) => {
       const ack = safeAck(cb);
       const code = socket.data.roomCode;
       const pid = socket.data.playerId;
@@ -168,7 +168,9 @@ export function registerSocketHandlers(io: Server, rooms: RoomManager): void {
       if (!room) return ack({ ok: false, error: "room_not_found" });
       const player = room.data.players.get(pid);
       if (!player?.isHost) return ack({ ok: false, error: "not_host" });
-      const res = room.startGame();
+      // `solo` (optionnel) autorise 1 seul couple (dev/test).
+      const solo = isObject(p) && p.solo === true;
+      const res = room.startGame(solo);
       if (!res.ok) return ack({ ok: false, error: res.reason ?? "cannot_start" });
       ack({ ok: true, data: { started: true } });
     });

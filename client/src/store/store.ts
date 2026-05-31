@@ -64,7 +64,7 @@ interface AppState {
   rerollName: (coupleId: string) => Promise<void>;
   setCoupleName: (coupleId: string, name: string) => Promise<void>;
   toggleReady: (ready: boolean) => Promise<void>;
-  startGame: () => Promise<void>;
+  startGame: (solo?: boolean) => Promise<void>;
   forceReveal: () => Promise<void>;
   submitAnswer: (answer: string) => Promise<void>;
   submitBet: (option: string, tokens: number) => Promise<void>;
@@ -203,8 +203,8 @@ export const useStore = create<AppState>((set, get) => ({
     await emitAck("pairing:ready", { ready });
   },
 
-  async startGame() {
-    const res = await emitAck<{ started: boolean }>("game:start");
+  async startGame(solo = false) {
+    const res = await emitAck<{ started: boolean }>("game:start", { solo });
     if (!res.ok) set({ error: res.error ?? "cannot_start" });
   },
 

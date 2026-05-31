@@ -330,3 +330,11 @@ input,
 .host-spectrum { max-width: 700px; margin: 24px auto; }
 .host-spectrum .spectrum-bar { height: 30px; }
 .host-spectrum .spectrum-poles { font-size: 1.1rem; }
+
+/* Bouton « Lancer en solo » (dev/test, 1 couple) — discret sous le bouton principal. */
+.host-solo {
+  margin-top: 12px;
+  opacity: 0.75;
+  font-size: 0.95rem;
+}
+.host-solo:hover { opacity: 1; }

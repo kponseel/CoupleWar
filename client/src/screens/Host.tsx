@@ -46,10 +46,11 @@ function HostShell({ children }: { children: ReactNode }) {
 function HostLobby({ snapshot }: { snapshot: RoomSnapshot }) {
   const startGame = useStore((s) => s.startGame);
   const couples = snapshot.couples;
+  const allComplete = couples.length > 0 && couples.every((c) => c.players.length === 2);
   const canStart =
-    couples.length >= snapshot.minCouples &&
-    couples.length <= snapshot.maxCouples &&
-    couples.every((c) => c.players.length === 2);
+    couples.length >= snapshot.minCouples && couples.length <= snapshot.maxCouples && allComplete;
+  // Mode solo (dev/test) : 1 couple complet suffit pour lancer.
+  const soloReady = allComplete && couples.length >= 1 && couples.length < snapshot.minCouples;
   const nameOf = (id: string) => snapshot.players.find((p) => p.id === id)?.name ?? "?";
   const unpaired = snapshot.players.filter((p) => !p.coupleId && !p.isHost);
 
@@ -92,9 +93,14 @@ function HostLobby({ snapshot }: { snapshot: RoomSnapshot }) {
           {unpaired.length > 0 && (
             <p className="hint">À apparier : {unpaired.map((p) => p.name).join(", ")}</p>
           )}
-          <button className="btn btn-primary btn-xl" disabled={!canStart} onClick={() => void startGame()}>
+          <button className="btn btn-primary btn-xl" disabled={!canStart} onClick={() => void startGame(false)}>
             {canStart ? "🚀 Lancer la partie" : `En attente de ${snapshot.minCouples} couples complets…`}
           </button>
+          {soloReady && (
+            <button className="btn btn-ghost host-solo" onClick={() => void startGame(true)}>
+              🧪 Lancer en solo (1 couple · test)
+            </button>
+          )}
         </div>
       </div>
     </HostShell>

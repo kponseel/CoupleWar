@@ -140,8 +140,8 @@ export interface ClientToServer {
   "pairing:setName": (p: { coupleId: string; name: string }, cb: Ack<{ name: string }>) => void;
   "pairing:ready": (p: { ready: boolean }, cb: Ack<{ ready: boolean }>) => void;
 
-  // Contrôle host
-  "game:start": (cb: Ack<{ started: boolean }>) => void;
+  // Contrôle host. `solo` (optionnel) autorise 1 seul couple (dev/test).
+  "game:start": (p: { solo?: boolean }, cb: Ack<{ started: boolean }>) => void;
   // Anti-blocage : l'hôte force la fin de la phase de jeu en cours (§A3).
   "game:forceReveal": (cb: Ack<{ forced: boolean }>) => void;
 

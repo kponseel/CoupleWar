@@ -87,6 +87,8 @@ export interface RoomData {
   totalRounds: number;
   currentMode: GameMode | null;
   isFinale: boolean;
+  /** Partie lancée en mode solo (1 couple, dev/test). */
+  solo: boolean;
   players: Map<string, Player>;
   couples: Map<string, Couple>;
 }
@@ -102,6 +104,7 @@ export function buildSnapshot(room: RoomData): RoomSnapshot {
     totalRounds: room.totalRounds,
     currentMode: room.currentMode,
     isFinale: room.isFinale,
+    solo: room.solo,
     players: [...room.players.values()].map(toPlayerView),
     couples: [...room.couples.values()].map(toCoupleView),
   };
