@@ -7,6 +7,7 @@ import { clientDistDir, loadConfig, loadEnv } from "./env.js";
 import { QuestionBank } from "./content/questions.js";
 import { loadNamePools } from "./content/coupleNames.js";
 import { loadResultsContent } from "./content/results.js";
+import { loadEmojiPool } from "./content/emojis.js";
 import { RoomManager } from "./rooms/RoomManager.js";
 import { registerSocketHandlers } from "./net/socket.js";
 
@@ -19,6 +20,7 @@ async function main(): Promise<void> {
   bank.load(env.contentDir);
   loadNamePools(env.contentDir);
   loadResultsContent(env.contentDir);
+  loadEmojiPool(env.contentDir);
 
   const app = express();
   app.get("/healthz", (_req, res) => {

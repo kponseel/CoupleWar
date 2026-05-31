@@ -58,7 +58,7 @@
     "freeTextMaxChars": 25
   },
 
-  // Mode D — Mime (§8). Présent pour la config, branché en v1.2.
+  // Mode D — Mime (§8). D3 (canal d'emojis) BRANCHÉ ; D1/D2 prévus v1.2.
   "mime": {
     "doodleTimeMs": 30000,
     "headsupTimeMs": 30000,
@@ -70,7 +70,9 @@
     "socialVoteBonus": 500,
     "headsupPerWordPts": 300,
     "otherCoupleGuessPts": 300,
-    "cameraClipSec": 5
+    "cameraClipSec": 5,
+    "emojiRoundTimeMs": 30000,
+    "guessMaxChars": 40
   },
 
   // Écran RESULTS (§9.4). compatFloor = plancher % de compatibilité (jamais <).
@@ -108,14 +110,15 @@
     "reconnectGraceMs": 30000
   },
 
-  // Séquence de rounds (modes branchés : sync, auction, wavelength).
+  // Séquence de rounds (modes branchés : sync, auction, wavelength, mime_d3).
   // Étend cette liste quand de nouveaux modes arrivent. Le dernier round = FINALE.
   "roundPlan": [
-    { "mode": "sync",    "intensityMax": "light" },
-    { "mode": "auction", "intensityMax": "medium" },
-    { "mode": "sync",    "intensityMax": "medium" },
-    { "mode": "auction", "intensityMax": "medium" },
-    { "mode": "sync",    "intensityMax": "medium", "finale": true }
+    { "mode": "sync",       "intensityMax": "light" },
+    { "mode": "auction",    "intensityMax": "medium" },
+    { "mode": "wavelength", "intensityMax": "light" },
+    { "mode": "mime_d3",    "intensityMax": "light" },
+    { "mode": "auction",    "intensityMax": "medium" },
+    { "mode": "sync",       "intensityMax": "medium", "finale": true }
   ],
 
   // Durée de l'écran ROUND_INTRO (annonce du mode), §5.2.

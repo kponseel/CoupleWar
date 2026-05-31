@@ -1,0 +1,92 @@
+[
+  {
+    "id": "q_emoji_0001",
+    "mode": "mime_d3",
+    "intensity": "light",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Transmets ce concept en emojis",
+    "mime": { "secret": "notre dimanche idéal", "accept": ["dimanche", "dimanche parfait", "week-end"] }
+  },
+  {
+    "id": "q_emoji_0002",
+    "mode": "mime_d3",
+    "intensity": "light",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "Transmets ce concept en emojis",
+    "mime": { "secret": "soirée pizza-canapé", "accept": ["pizza canapé", "soirée pizza", "pizza télé"] }
+  },
+  {
+    "id": "q_emoji_0003",
+    "mode": "mime_d3",
+    "intensity": "light",
+    "category": "mythologie",
+    "tags": ["daily"],
+    "text": "Transmets ce concept en emojis",
+    "mime": { "secret": "vacances à la plage", "accept": ["plage", "vacances mer", "vacances soleil"] }
+  },
+  {
+    "id": "q_emoji_0004",
+    "mode": "mime_d3",
+    "intensity": "light",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Transmets ce concept en emojis",
+    "mime": { "secret": "marathon de séries", "accept": ["série", "binge série", "netflix"] }
+  },
+  {
+    "id": "q_emoji_0005",
+    "mode": "mime_d3",
+    "intensity": "medium",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "Transmets ce concept en emojis",
+    "mime": { "secret": "petit-déjeuner au lit", "accept": ["petit dej au lit", "brunch au lit", "café au lit"] }
+  },
+  {
+    "id": "q_emoji_0006",
+    "mode": "mime_d3",
+    "intensity": "light",
+    "category": "mythologie",
+    "tags": ["daily"],
+    "text": "Transmets ce concept en emojis",
+    "mime": { "secret": "road trip en voiture", "accept": ["road trip", "voyage en voiture", "virée en voiture"] }
+  },
+  {
+    "id": "q_emoji_0007",
+    "mode": "mime_d3",
+    "intensity": "light",
+    "category": "avatar_couple",
+    "tags": ["daily"],
+    "text": "Transmets ce concept en emojis",
+    "mime": { "secret": "apéro entre amis", "accept": ["apéro", "soirée apéro", "apéritif"] }
+  },
+  {
+    "id": "q_emoji_0008",
+    "mode": "mime_d3",
+    "intensity": "medium",
+    "category": "mode_panique",
+    "tags": ["daily"],
+    "text": "Transmets ce concept en emojis",
+    "mime": { "secret": "grasse matinée du dimanche", "accept": ["grasse matinée", "dormir tard", "rester au lit"] }
+  },
+  {
+    "id": "q_emoji_0009",
+    "mode": "mime_d3",
+    "intensity": "light",
+    "category": "mythologie",
+    "tags": ["daily"],
+    "text": "Transmets ce concept en emojis",
+    "mime": { "secret": "soirée jeux de société", "accept": ["jeux de société", "soirée jeux", "jeu de plateau"] }
+  },
+  {
+    "id": "q_emoji_0010",
+    "mode": "mime_d3",
+    "intensity": "medium",
+    "category": "curseur_desir",
+    "tags": ["future"],
+    "text": "Transmets ce concept en emojis",
+    "mime": { "secret": "adopter un chien", "accept": ["chien", "avoir un chien", "adopter un animal"] }
+  }
+]

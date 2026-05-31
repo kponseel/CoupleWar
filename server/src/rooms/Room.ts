@@ -26,11 +26,13 @@ import type { ModeFactory, RoundContext, RoundController } from "../engine/modes
 import { createSyncMode } from "../engine/modes/syncMode.js";
 import { createAuctionMode } from "../engine/modes/auctionMode.js";
 import { createWavelengthMode } from "../engine/modes/wavelengthMode.js";
+import { createMimeEmojiMode } from "../engine/modes/mimeEmojiMode.js";
 
 const MODE_FACTORIES: Partial<Record<GameMode, ModeFactory>> = {
   sync: createSyncMode,
   auction: createAuctionMode,
   wavelength: createWavelengthMode,
+  mime_d3: createMimeEmojiMode,
 };
 
 export interface RoomDeps {
@@ -508,6 +510,16 @@ export class Room {
       return { accepted: false, reason: "not_in_play" };
     }
     return this.controller.collectBet(playerId, payload);
+  }
+
+  submitEmoji(
+    playerId: string,
+    payload: { questionId: string; emoji: string },
+  ): { accepted: boolean; reason?: string } {
+    if (this.data.state !== "ROUND_PLAY" || !this.controller?.collectEmoji) {
+      return { accepted: false, reason: "not_in_play" };
+    }
+    return this.controller.collectEmoji(playerId, payload);
   }
 
   dispose(): void {

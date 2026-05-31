@@ -79,8 +79,17 @@ export function initConnection(): void {
       // Nouvelle phase Wavelength : réarme les indicateurs de saisie/pari.
       patch.answered = false;
       patch.betPlaced = false;
+    } else if (p.mode === "mime_d3") {
+      patch.answered = false;
+      patch.mimeEmojis = []; // nouvelle manche emoji : on repart d'une liste vide
     }
     set(patch);
+  });
+
+  // Mime D3 : un emoji arrive du Donneur → on l'ajoute à la liste affichée.
+  socket.on("mime:emoji", (p) => {
+    const cur = useStore.getState().mimeEmojis;
+    set({ mimeEmojis: [...cur, p.emoji] });
   });
 
   socket.on("answer:ack", () => set({ answered: true }));
@@ -188,5 +197,6 @@ function modeLabel(mode: string): string {
   if (mode === "sync") return "Sync !";
   if (mode === "auction") return "Aux enchères de l'autre !";
   if (mode === "wavelength") return "Wavelength !";
+  if (mode === "mime_d3") return "Mime emojis !";
   return mode;
 }

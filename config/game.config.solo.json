@@ -1,39 +1,107 @@
 {
   "configVersion": "1.0.0-solo-test",
-  "room": { "minCouples": 2, "maxCouples": 6, "codeLength": 4 },
+  "room": {
+    "minCouples": 2,
+    "maxCouples": 6,
+    "codeLength": 4
+  },
   "sync": {
-    "deadlineMs": 600, "baseMin": 500, "baseMax": 1000,
-    "matchMultiplier": 2.5, "heartbeatGapMs": 500, "heartbeatBonus": 500,
-    "streakThreshold": 3, "streakMultiplier": 1.5, "lateToleranceMs": 200
+    "deadlineMs": 600,
+    "baseMin": 500,
+    "baseMax": 1000,
+    "matchMultiplier": 2.5,
+    "heartbeatGapMs": 500,
+    "heartbeatBonus": 500,
+    "streakThreshold": 3,
+    "streakMultiplier": 1.5,
+    "lateToleranceMs": 200
   },
   "wavelength": {
-    "clueTimeMs": 600, "receiveTimeMs": 600, "bullseyePts": 4, "midPts": 3, "outerPts": 2,
-    "betCorrectPts": 1, "betBullseyePts": 2, "emojiGridSize": 60,
-    "bullseyeRadius": 5, "midRadius": 12, "outerRadius": 22, "clueMaxChars": 20
+    "clueTimeMs": 600,
+    "receiveTimeMs": 600,
+    "bullseyePts": 4,
+    "midPts": 3,
+    "outerPts": 2,
+    "betCorrectPts": 1,
+    "betBullseyePts": 2,
+    "emojiGridSize": 60,
+    "bullseyeRadius": 5,
+    "midRadius": 12,
+    "outerRadius": 22,
+    "clueMaxChars": 20
   },
   "auction": {
-    "answerTimeMs": 600, "betTimeMs": 600, "tokensPerRound": 10, "minBet": 1, "maxBet": 5,
-    "winMultiplier": 3, "tokenToPoints": 100, "perfectGuessBonus": 1000, "freeTextMaxChars": 25
+    "answerTimeMs": 600,
+    "betTimeMs": 600,
+    "tokensPerRound": 10,
+    "minBet": 1,
+    "maxBet": 5,
+    "winMultiplier": 3,
+    "tokenToPoints": 100,
+    "perfectGuessBonus": 1000,
+    "freeTextMaxChars": 25
   },
   "mime": {
-    "doodleTimeMs": 30000, "headsupTimeMs": 30000, "headsupCluesMax": 5, "emojiCooldownMs": 4000,
-    "emojiPoolSize": 120, "emojiHandSize": 6, "matchPts": 1500, "socialVoteBonus": 500,
-    "headsupPerWordPts": 300, "otherCoupleGuessPts": 300, "cameraClipSec": 5
+    "doodleTimeMs": 30000,
+    "headsupTimeMs": 30000,
+    "headsupCluesMax": 5,
+    "emojiCooldownMs": 4000,
+    "emojiPoolSize": 120,
+    "emojiHandSize": 6,
+    "matchPts": 1500,
+    "socialVoteBonus": 500,
+    "headsupPerWordPts": 300,
+    "otherCoupleGuessPts": 300,
+    "cameraClipSec": 5,
+    "emojiRoundTimeMs": 800,
+    "guessMaxChars": 40
   },
   "results": {
     "compatFloor": 67,
-    "weights": { "sync": 0.35, "prediction": 0.25, "wavelength": 0.20, "divergence": 0.20 }
+    "weights": {
+      "sync": 0.35,
+      "prediction": 0.25,
+      "wavelength": 0.2,
+      "divergence": 0.2
+    }
   },
-  "tone": { "maxDeepQuestionsPerGame": 2, "funToVulnerableRatio": "5:1" },
-  "reveal": { "drumrollMs": 100, "freezeMs": 50, "flashMs": 100 },
-  "finale": { "scoreMultiplier": 2.5 },
-  "clock": { "samples": 3, "sampleIntervalMs": 50 },
-  "network": { "reconnectGraceMs": 30000 },
+  "tone": {
+    "maxDeepQuestionsPerGame": 2,
+    "funToVulnerableRatio": "5:1"
+  },
+  "reveal": {
+    "drumrollMs": 100,
+    "freezeMs": 50,
+    "flashMs": 100
+  },
+  "finale": {
+    "scoreMultiplier": 2.5
+  },
+  "clock": {
+    "samples": 3,
+    "sampleIntervalMs": 50
+  },
+  "network": {
+    "reconnectGraceMs": 30000
+  },
   "roundPlan": [
-    { "mode": "sync", "intensityMax": "light" },
-    { "mode": "auction", "intensityMax": "light" },
-    { "mode": "wavelength", "intensityMax": "light" },
-    { "mode": "sync", "intensityMax": "light", "finale": true }
+    {
+      "mode": "sync",
+      "intensityMax": "light"
+    },
+    {
+      "mode": "auction",
+      "intensityMax": "light"
+    },
+    {
+      "mode": "wavelength",
+      "intensityMax": "light"
+    },
+    {
+      "mode": "sync",
+      "intensityMax": "light",
+      "finale": true
+    }
   ],
   "introMs": 100,
   "revealHoldMs": 200,

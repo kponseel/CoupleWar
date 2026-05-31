@@ -182,6 +182,7 @@ function PlayView() {
   if (play.mode === "auction" && play.phase === "bet") return <AuctionBet play={play} />;
   if (play.mode === "wavelength" && play.phase === "clue") return <WavelengthClue play={play} />;
   if (play.mode === "wavelength" && play.phase === "reception") return <WavelengthReception play={play} />;
+  if (play.mode === "mime_d3") return <MimeEmojiPlay play={play} />;
   return <CenterMsg title="Regarde la TV" />;
 }
 
@@ -298,6 +299,84 @@ function AuctionBet({ play }: { play: Extract<PlayPayload, { mode: "auction"; ph
           onClick={() => option && void submitBet(option, tokens)}
         >
           Parier {tokens} 💖
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// --- Mime D3 : canal d'emojis (§8.3) ---
+
+function MimeEmojiPlay({ play }: { play: Extract<PlayPayload, { mode: "mime_d3" }> }) {
+  const playerId = useStore((s) => s.playerId);
+  const myCoupleId = useStore(selectMyCoupleId);
+  const answered = useStore((s) => s.answered);
+  const mimeEmojis = useStore((s) => s.mimeEmojis);
+  const sendEmoji = useStore((s) => s.sendEmoji);
+  const submitAnswer = useStore((s) => s.submitAnswer);
+  const [guess, setGuess] = useState("");
+  const [cooldown, setCooldown] = useState(false);
+
+  const isGiver = play.giverPlayerId === playerId;
+  const isReceiver = play.receiverPlayerId === playerId;
+  const isActiveCouple = myCoupleId === play.giverCoupleId;
+
+  // Le Donneur : voit le concept + sa main d'emojis, les envoie un par un.
+  if (isGiver) {
+    const send = (emoji: string) => {
+      if (cooldown) return;
+      void sendEmoji(emoji);
+      setCooldown(true);
+      setTimeout(() => setCooldown(false), play.emojiCooldownMs);
+    };
+    return (
+      <div className="player-screen">
+        <Countdown start={play.serverStartTime} deadline={play.deadline} />
+        <div className="badge-role">Tu es le Donneur 🤫</div>
+        <p className="hint">Fais deviner, UNIQUEMENT avec des emojis :</p>
+        <h2 className="question">« {play.secret} »</h2>
+        <p className="hint">{cooldown ? "⏳ patiente…" : "Tape un emoji pour l'envoyer"}</p>
+        <div className="emoji-hand">
+          {(play.hand ?? []).map((e, i) => (
+            <button key={i} className="emoji-btn" disabled={cooldown} onClick={() => send(e)} aria-label={`Envoyer ${e}`}>
+              {e}
+            </button>
+          ))}
+        </div>
+        <div className="emoji-stream" aria-label="Emojis envoyés">
+          {mimeEmojis.map((e, i) => (
+            <span key={i}>{e}</span>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Récepteur + autres couples : voient les emojis arriver, tapent leur réponse.
+  if (answered) {
+    return <CenterMsg title="✅ Bien deviné !" subtitle={isActiveCouple ? "Bravo à vous deux !" : "Chaos bonus en vue…"} />;
+  }
+  return (
+    <div className="player-screen">
+      <Countdown start={play.serverStartTime} deadline={play.deadline} />
+      <div className="badge-role">{isReceiver ? "Tu es le Récepteur" : "Autre couple — devine aussi !"}</div>
+      <p className="hint">Que veut faire deviner le Donneur ?</p>
+      <div className="emoji-stream big" aria-label="Emojis reçus">
+        {mimeEmojis.length === 0 ? <span className="hint">En attente d'emojis…</span> : mimeEmojis.map((e, i) => <span key={i}>{e}</span>)}
+      </div>
+      <div className="free-text">
+        <input
+          value={guess}
+          maxLength={play.guessMaxChars}
+          onChange={(e) => setGuess(e.target.value)}
+          placeholder="ta réponse…"
+          aria-label="Réponse"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && guess.trim()) void submitAnswer(guess.trim());
+          }}
+        />
+        <button className="btn btn-primary" disabled={!guess.trim()} onClick={() => void submitAnswer(guess.trim())}>
+          Deviner
         </button>
       </div>
     </div>
@@ -475,5 +554,7 @@ function CenterMsg({ title, subtitle }: { title: string; subtitle?: string }) {
 function modeName(mode: string): string {
   if (mode === "sync") return "SYNC !";
   if (mode === "auction") return "ENCHÈRES !";
+  if (mode === "wavelength") return "WAVELENGTH !";
+  if (mode === "mime_d3") return "MIME EMOJIS !";
   return mode.toUpperCase();
 }

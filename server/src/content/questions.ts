@@ -17,6 +17,7 @@ export class QuestionBank {
       ["sync", "questions.sync.json"],
       ["auction", "questions.auction.json"],
       ["wavelength", "questions.wavelength.json"],
+      ["mime_d3", "questions.mime_d3.json"],
     ];
     for (const [mode, file] of files) {
       const path = resolve(contentDir, file);

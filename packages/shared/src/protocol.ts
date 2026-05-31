@@ -84,12 +84,37 @@ export interface WavelengthReceptionPhase {
   deadline: number;
 }
 
+/**
+ * Mime D3 — Canal d'emojis (§8.3). Un seul payload pour toute la manche.
+ * Le `secret` n'est envoyé QU'AU Donneur (filtré par la Room). La main d'emojis
+ * (`hand`) aussi. Récepteur et autres couples reçoivent le payload sans secret
+ * ni main, et voient les emojis arriver via l'événement `mime:emoji`.
+ */
+export interface MimeEmojiPhase {
+  mode: "mime_d3";
+  phase: "play";
+  questionId: string;
+  text: string;
+  giverPlayerId: string;
+  giverCoupleId: string;
+  receiverPlayerId: string;
+  /** Concept secret — UNIQUEMENT pour le Donneur. */
+  secret?: string;
+  /** Main d'emojis tirée — UNIQUEMENT pour le Donneur. */
+  hand?: string[];
+  emojiCooldownMs: number;
+  guessMaxChars: number;
+  serverStartTime: number;
+  deadline: number;
+}
+
 export type PlayPayload =
   | PlayPayloadSync
   | AuctionAnswerPhase
   | AuctionBetPhase
   | WavelengthCluePhase
-  | WavelengthReceptionPhase;
+  | WavelengthReceptionPhase
+  | MimeEmojiPhase;
 
 /** Reveal couple-par-couple générique (§5.2 / §7.3). */
 export interface RevealPayload {
@@ -154,6 +179,11 @@ export interface ClientToServer {
     p: { questionId: string; option: string; tokens: number },
     cb: Ack<{ accepted: boolean; reason?: string }>,
   ) => void;
+  // Mime D3 : le Donneur envoie un emoji de sa main (cooldown serveur §8.3).
+  "mime:sendEmoji": (
+    p: { questionId: string; emoji: string },
+    cb: Ack<{ accepted: boolean; reason?: string }>,
+  ) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -166,6 +196,8 @@ export interface ServerToClient {
   "round:intro": (p: { round: number; mode: GameMode; rule: string; isFinale: boolean; executeAt: number }) => void;
   "round:play": (p: PlayPayload) => void;
   "answer:ack": (p: { questionId: string; recorded: boolean }) => void; // feedback privé §5.2
+  // Mime D3 : un emoji a été émis par le Donneur (broadcast à toute la room).
+  "mime:emoji": (p: { questionId: string; emoji: string; index: number }) => void;
   "round:reveal": (p: RevealPayload) => void;
 
   "leaderboard:update": (p: { entries: LeaderboardEntry[]; rowPauseMs: number; topReserved: boolean }) => void;

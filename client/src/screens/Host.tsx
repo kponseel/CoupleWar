@@ -215,7 +215,24 @@ function renderHostPlay(play: PlayPayload, snapshot: RoomSnapshot) {
       </>
     );
   }
+  if (play.mode === "mime_d3") {
+    const giver = snapshot.players.find((p) => p.id === play.giverPlayerId);
+    return <HostMimeEmoji giverName={giver?.name ?? "?"} />;
+  }
   return null;
+}
+
+function HostMimeEmoji({ giverName }: { giverName: string }) {
+  const emojis = useStore((s) => s.mimeEmojis);
+  return (
+    <>
+      <div className="phase-tag">MIME · canal d'emojis</div>
+      <p className="host-hint">🤫 {giverName} transmet un concept… 📱 devinez en tapant votre réponse !</p>
+      <div className="emoji-stream host">
+        {emojis.length === 0 ? <span className="host-hint">En attente d'emojis…</span> : emojis.map((e, i) => <span key={i}>{e}</span>)}
+      </div>
+    </>
+  );
 }
 
 function HostSpectrum({ left, right }: { left: string; right: string }) {
@@ -295,6 +312,10 @@ function detailText(reveal: RevealPayload, pc: RevealPayload["perCouple"][number
     }
     return pc.deltaScore > 0 ? "✅ Bon pari !" : "🙈 Raté";
   }
+  if (reveal.mode === "mime_d3") {
+    if (d.role === "active") return d.transmitted ? "💖 Transmis !" : "🙈 Pas transmis";
+    return pc.deltaScore > 0 ? "⚡ Chaos bonus !" : d.correct ? "✅ Deviné (hors délai)" : "🙈 Raté";
+  }
   return "";
 }
 
@@ -348,5 +369,6 @@ function modeTitle(mode: string): string {
   if (mode === "sync") return "⚡ SYNC";
   if (mode === "auction") return "💰 AUX ENCHÈRES DE L'AUTRE";
   if (mode === "wavelength") return "🎯 WAVELENGTH";
+  if (mode === "mime_d3") return "🙊 MIME EMOJIS";
   return mode.toUpperCase();
 }

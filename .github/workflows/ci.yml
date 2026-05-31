@@ -63,3 +63,14 @@ jobs:
           STATUS=$?
           kill $SRV 2>/dev/null || true
           exit $STATUS
+
+      - name: End-to-end Mime D3 (canal emojis, secret caché)
+        run: |
+          COUPLEWAR_CONFIG_PATH=config/game.config.mime.json PORT=3096 SERVE_STATIC=false \
+            node server/dist/index.js > /tmp/cw-mime.log 2>&1 &
+          SRV=$!
+          for i in $(seq 1 30); do curl -sf http://localhost:3096/healthz && break || sleep 0.5; done
+          E2E_URL=http://localhost:3096 node server/test/e2e-mime.mjs
+          STATUS=$?
+          kill $SRV 2>/dev/null || true
+          exit $STATUS

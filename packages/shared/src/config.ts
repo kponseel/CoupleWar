@@ -54,7 +54,7 @@ export const gameConfigSchema = z.object({
     doodleTimeMs: z.number().positive(),
     headsupTimeMs: z.number().positive(),
     headsupCluesMax: z.number().int().positive(),
-    emojiCooldownMs: z.number().positive(),
+    emojiCooldownMs: z.number().nonnegative(), // 0 = pas de cooldown (tests)
     emojiPoolSize: z.number().int().positive(),
     emojiHandSize: z.number().int().positive(),
     matchPts: z.number(),
@@ -62,6 +62,9 @@ export const gameConfigSchema = z.object({
     headsupPerWordPts: z.number(),
     otherCoupleGuessPts: z.number(),
     cameraClipSec: z.number(),
+    // D3 (canal d'emojis) :
+    emojiRoundTimeMs: z.number().positive(),
+    guessMaxChars: z.number().int().positive(),
   }),
   results: z.object({
     compatFloor: z.number().min(0).max(100),

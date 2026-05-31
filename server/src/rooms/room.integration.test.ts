@@ -11,6 +11,7 @@ import { Room } from "./Room.js";
 import { QuestionBank } from "../content/questions.js";
 import { loadNamePools } from "../content/coupleNames.js";
 import { loadResultsContent } from "../content/results.js";
+import { loadEmojiPool } from "../content/emojis.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..", "..", "..");
@@ -21,13 +22,14 @@ const baseConfig = gameConfigSchema.parse(
 );
 
 // Config rapide pour faire défiler la state-machine sans attendre les vrais timers.
-// Le roundPlan exerce LES TROIS modes (sync, auction, wavelength) → la machine
-// d'état Wavelength est couverte en intégration (solo ET multi-couples).
+// Le roundPlan exerce LES QUATRE modes branchés → machines d'état couvertes en
+// intégration (solo ET multi-couples).
 const fastConfig: GameConfig = {
   ...baseConfig,
   sync: { ...baseConfig.sync, deadlineMs: 200 },
   auction: { ...baseConfig.auction, answerTimeMs: 200, betTimeMs: 200 },
   wavelength: { ...baseConfig.wavelength, clueTimeMs: 200, receiveTimeMs: 200 },
+  mime: { ...baseConfig.mime, emojiRoundTimeMs: 200, emojiCooldownMs: 0 },
   introMs: 10,
   revealHoldMs: 10,
   interludeMs: 10,
@@ -37,6 +39,7 @@ const fastConfig: GameConfig = {
     { mode: "sync", intensityMax: "light" },
     { mode: "auction", intensityMax: "medium" },
     { mode: "wavelength", intensityMax: "light" },
+    { mode: "mime_d3", intensityMax: "light" },
     { mode: "sync", intensityMax: "medium", finale: true },
   ],
 };
@@ -45,6 +48,7 @@ const bank = new QuestionBank();
 bank.load(contentDir);
 loadNamePools(contentDir);
 loadResultsContent(contentDir);
+loadEmojiPool(contentDir);
 
 /** Faux io : capture les événements émis (room + sockets individuels). */
 function makeFakeIo() {
@@ -121,6 +125,70 @@ test("Wavelength : forceReveal pendant la phase clue ne plante pas (§A3)", asyn
   const res = room.forceReveal(h.id);
   assert.equal(res.forced, true);
   assert.notEqual(room.data.state, "ROUND_PLAY");
+  room.dispose();
+});
+
+/** Config dont le PREMIER round est mime_d3. */
+const mimeFirstConfig: GameConfig = {
+  ...fastConfig,
+  mime: { ...fastConfig.mime, emojiRoundTimeMs: 5000, emojiCooldownMs: 0 },
+  roundPlan: [
+    { mode: "mime_d3", intensityMax: "light" },
+    { mode: "sync", intensityMax: "light", finale: true },
+  ],
+};
+
+test("Mime D3 : secret + main uniquement au Donneur ; emoji broadcasté ; devinette correcte score (§8.3)", async () => {
+  const { io, events } = makeFakeIo();
+  const room = new Room("MIME", { io, config: mimeFirstConfig, questionBank: bank });
+  const h = room.addPlayer("s_host", "Host", true);
+  const a1 = room.addPlayer("s_a1", "Alex", false);
+  const a2 = room.addPlayer("s_a2", "Sam", false);
+  const b1 = room.addPlayer("s_b1", "Lou", false);
+  const b2 = room.addPlayer("s_b2", "Max", false);
+  const cA = room.createCouple(a1.id) as { joinCode: string };
+  room.joinCouple(a2.id, cA.joinCode);
+  const cB = room.createCouple(b1.id) as { joinCode: string };
+  room.joinCouple(b2.id, cB.joinCode);
+  room.startGame();
+  await sleep(40);
+  assert.equal(room.data.currentMode, "mime_d3");
+
+  const plays = events.filter((e) => e.event === "round:play" && (e.args[0] as { mode: string }).mode === "mime_d3");
+  const withSecret = plays.filter((e) => (e.args[0] as { secret?: string }).secret !== undefined);
+  assert.equal(withSecret.length, 1, "une seule émission porte le secret/la main");
+  const payload = withSecret[0].args[0] as { secret: string; hand: string[]; giverPlayerId: string; receiverPlayerId: string; questionId: string };
+  assert.ok(Array.isArray(payload.hand) && payload.hand.length > 0);
+  // Le Donneur envoie un emoji de sa main → broadcast mime:emoji.
+  const beforeEmoji = events.length;
+  const emojiRes = room.submitEmoji(payload.giverPlayerId, { questionId: payload.questionId, emoji: payload.hand[0] });
+  assert.equal(emojiRes.accepted, true);
+  assert.ok(events.slice(beforeEmoji).some((e) => e.event === "mime:emoji"), "l'emoji doit être broadcasté");
+  // Un non-Donneur ne peut pas envoyer d'emoji.
+  assert.equal(room.submitEmoji(payload.receiverPlayerId, { questionId: payload.questionId, emoji: payload.hand[0] }).accepted, false);
+
+  // Le Récepteur devine le concept (le secret est connu du test via le payload Donneur).
+  const guess = room.submitAnswer(payload.receiverPlayerId, {
+    questionId: payload.questionId,
+    answer: payload.secret,
+    clientSubmitTime: Date.now(),
+  });
+  assert.equal(guess.accepted, true);
+  // Le Donneur ne peut pas deviner.
+  assert.equal(
+    room.submitAnswer(payload.giverPlayerId, { questionId: payload.questionId, answer: payload.secret, clientSubmitTime: Date.now() }).accepted,
+    false,
+  );
+
+  room.forceReveal(h.id);
+  await sleep(20);
+  const reveal = lastEvent(events, "round:reveal");
+  const active = (reveal!.args[0] as { perCouple: Array<{ coupleId: string; deltaScore: number; detail: Record<string, unknown> }> }).perCouple.find(
+    (pc) => (pc.detail as { role?: string }).role === "active",
+  );
+  assert.ok(active, "le couple actif figure dans le reveal");
+  assert.equal((active!.detail as { transmitted: boolean }).transmitted, true);
+  assert.ok(active!.deltaScore > 0, "le couple actif marque pour la transmission réussie");
   room.dispose();
 });
 
@@ -226,6 +294,8 @@ function driveSolo(
     });
   } else if (p.mode === "wavelength" && p.phase === "reception") {
     room.submitAnswer(p.receiverPlayerId as string, { questionId: p.questionId as string, answer: "50", clientSubmitTime: now });
+  } else if (p.mode === "mime_d3") {
+    // Round mime : se termine par timeout (emojiRoundTimeMs court).
   }
 }
 
@@ -428,5 +498,8 @@ function drive(
     for (const pid of [players.a1.id, players.a2.id, players.b1.id, players.b2.id]) {
       room.submitBet(pid, { questionId: p.questionId as string, option: "left", tokens: 0 });
     }
+  } else if (p.mode === "mime_d3") {
+    // Le round se termine par timeout (emojiRoundTimeMs court) ; rien à forcer.
+    // (le path de devinette est testé spécifiquement plus bas)
   }
 }

@@ -59,6 +59,11 @@ export interface RoundController {
     playerId: string,
     payload: { questionId: string; option: string; tokens: number },
   ): { accepted: boolean; reason?: string };
+  /** Mime D3 : le Donneur envoie un emoji de sa main. */
+  collectEmoji?(
+    playerId: string,
+    payload: { questionId: string; emoji: string },
+  ): { accepted: boolean; reason?: string };
   /** computeScore + buildReveal : finalise, mute les couples, renvoie le reveal + FX. */
   finishAndReveal(executeAt: number): { reveal: RevealPayload; fx: FxEvent[] };
   /** Payload de jeu courant, pour re-synchroniser un joueur qui se reconnecte (§14). */

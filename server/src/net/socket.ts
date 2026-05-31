@@ -217,6 +217,18 @@ export function registerSocketHandlers(io: Server, rooms: RoomManager): void {
       ack({ ok: true, data: { accepted: res.accepted, reason: res.reason } });
     });
 
+    socket.on("mime:sendEmoji", (payload, cb) => {
+      const ack = safeAck(cb);
+      const code = socket.data.roomCode;
+      const pid = socket.data.playerId;
+      if (!code || !pid) return ack({ ok: false, error: "no_session" });
+      if (!isObject(payload)) return ack({ ok: false, error: "bad_payload" });
+      const room = rooms.get(code);
+      if (!room) return ack({ ok: false, error: "room_not_found" });
+      const res = room.submitEmoji(pid, payload as { questionId: string; emoji: string });
+      ack({ ok: true, data: { accepted: res.accepted, reason: res.reason } });
+    });
+
     socket.on("disconnect", () => {
       const code = socket.data.roomCode;
       const pid = socket.data.playerId;

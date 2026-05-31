@@ -279,11 +279,33 @@ callout(
   C.gold,
 );
 
+heading("Jeu 3  -  Wavelength : un seul mot pour viser");
+modeCard("3", "Wavelength", sec(cfg.wavelength.clueTimeMs) + " + " + sec(cfg.wavelength.receiveTimeMs), [
+  "Un de vous (l'Emetteur) voit une cible cachee sur une echelle ; il n'a qu'UN mot pour y guider l'autre.",
+  "Le Recepteur place le curseur. Pendant ce temps, les autres couples parient la direction.",
+  "Plus le curseur est proche du centre, plus le couple actif marque (4 / 3 / 2 pts).",
+]);
+bullet("Les parieurs marquent +" + cfg.wavelength.betCorrectPts + " s'ils devinent la bonne direction, +" + cfg.wavelength.betBullseyePts + " s'ils annoncent « dans le mille » et que c'est juste.");
+
+heading("Jeu 4  -  Mime emojis : transmets sans mots");
+modeCard("4", "Mime emojis", sec(cfg.mime.emojiRoundTimeMs), [
+  "Le Donneur voit un concept secret et une main de " + cfg.mime.emojiHandSize + " emojis.",
+  "Il les envoie un par un (espaces de " + sec(cfg.mime.emojiCooldownMs) + ") ; AUCUN mot autorise.",
+  "Le/la partenaire devine en tapant sa reponse. Les autres couples aussi (chaos bonus).",
+]);
+bullet("Concept transmis (le/la partenaire devine) : +" + cfg.mime.matchPts + " pts pour le couple.");
+bullet("Chaos bonus : un autre couple qui devine AVANT le/la partenaire gagne +" + cfg.mime.otherCoupleGuessPts + " pts.");
+callout(
+  "Mode solo (test entre deux)",
+  "Pas le temps de reunir plusieurs couples ? L'hote peut lancer une partie a UN seul couple " +
+    "(bouton « Lancer en solo ») pour tester tranquillement tous les jeux.",
+  C.accent2,
+);
+
 heading("Et apres ? (a venir)");
 para(
-  "D'autres jeux rejoignent CoupleWar dans les prochaines versions : Wavelength (transmettre un concept avec un " +
-    "seul mot), Mime numerique (dessin, telephone-front facon Heads Up!, canal d'emojis). Le moteur est deja " +
-    "concu pour les accueillir.",
+  "Les prochaines versions ajouteront le Mime dessin et le telephone-front (facon Heads Up!), les " +
+    "selfie-reactions et un mode sans ecran TV. Le moteur est deja concu pour les accueillir.",
   { color: C.muted },
 );
 

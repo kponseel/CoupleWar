@@ -26,7 +26,8 @@ export interface Question {
   text: string;
   options?: string[];
   wavelength?: { poleLeft: string; poleRight: string };
-  mime?: { secret: string };
+  /** Mime : concept secret + variantes acceptées au fuzzy-match (§8). */
+  mime?: { secret: string; accept?: string[] };
 }
 
 /** Vue publique d'un joueur (diffusée). */

@@ -46,6 +46,8 @@ interface AppState {
   answered: boolean;
   betPlaced: boolean;
   isTargetThisRound: boolean;
+  /** Emojis reçus pendant la manche Mime D3 (dans l'ordre d'arrivée). */
+  mimeEmojis: string[];
   reveal: RevealPayload | null;
   leaderboard: LeaderboardState | null;
   results: CoupleResult[] | null;
@@ -68,6 +70,7 @@ interface AppState {
   forceReveal: () => Promise<void>;
   submitAnswer: (answer: string) => Promise<void>;
   submitBet: (option: string, tokens: number) => Promise<void>;
+  sendEmoji: (emoji: string) => Promise<void>;
 }
 
 const ACK_TIMEOUT_MS = 8000;
@@ -137,6 +140,7 @@ const initial = {
   answered: false,
   betPlaced: false,
   isTargetThisRound: false,
+  mimeEmojis: [] as string[],
   reveal: null as RevealPayload | null,
   leaderboard: null as LeaderboardState | null,
   results: null as CoupleResult[] | null,
@@ -241,6 +245,21 @@ export const useStore = create<AppState>((set, get) => ({
     });
     if (!(res.ok && res.data?.accepted)) {
       set({ betPlaced: false, error: res.data?.reason ?? res.error ?? "rejected" });
+      sfx.fail();
+    }
+  },
+
+  async sendEmoji(emoji) {
+    const play = get().play;
+    if (!play) return;
+    sfx.tap();
+    const res = await emitAck<{ accepted: boolean; reason?: string }>("mime:sendEmoji", {
+      questionId: play.questionId,
+      emoji,
+    });
+    if (!(res.ok && res.data?.accepted)) {
+      // cooldown / rejet : feedback léger, le Donneur peut réessayer après le délai.
+      set({ error: res.data?.reason === "cooldown" ? "Attends un peu ⏳" : res.data?.reason ?? "rejected" });
       sfx.fail();
     }
   },
